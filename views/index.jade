@@ -2,17 +2,24 @@ extends layout
 
 block content
 	h1= title
-	p Welcome to #{title}
 
 	ul(id="messages")
 	form(action="")
-		input(id="m" autocomplete="off" autofocus)
+		input(id="m" autocomplete="off" autofocus float="left")
+		input(id="user" float="right")
 		button Send
 	script.
 		var socket = io();
 		$('form').submit(function(){
 		  // send input
-		  socket.emit('chat message', $('#m').val());
+		  var user = $('#user').val();
+		  user = user.replace(':', '_');
+		  if (user == "") {
+		  	user = "User";
+		  }
+		  var msg = $('#m').val();
+
+		  socket.emit('chat message', user + ':' + msg);
 		  // clear input
 		  $('#m').val('');
 		  return false;
