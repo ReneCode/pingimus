@@ -11,6 +11,7 @@ Tile.prototype.getItems = function() {
 
 Tile.prototype.addItem = function(item) {
 	this._items.push(item);
+	item.tileId = this.id;
 };
 
 //Tile.prototype.createTileId = function()

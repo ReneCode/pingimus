@@ -44,16 +44,24 @@ describe('Tile#setItem', function() {
 
 	it ('#addItem -> tile', function() {
 		var item = {x:49, y:31};
-		var world = World({width:1000, height:1000});
+		var world = new World({width:1000, height:1000});
 		var tile = world.addItem(item);
 		expect(tile.id).to.eql("4:3");
+	});
+
+
+	it ('#addItem -> item width tileId', function() {
+		var item = {x:49, y:31, name:'abc'};
+		var world = World({width:1000, height:1000});
+		var tile = world.addItem(item);
+		expect(item).to.eql({x:49, y:31, name:'abc', tileId:"4:3"});
 	});
 
 	it ('#addItem -> filled tile', function() {
 		var item = {x:49, y:31, name:'abc'};
 		var world = World({width:1000, height:1000});
 		var tile = world.addItem(item);
-		expect(tile.getItems()).to.eql([{x:49, y:31, name:'abc'}]);
+		expect(tile.getItems()).to.eql([{x:49, y:31, name:'abc', tileId:"4:3"}]);
 	});
 
 	it ('#addItem -> same tile', function() {

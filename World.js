@@ -25,7 +25,6 @@ var World = function(para) {
 			return _tiles[tileId];
 		}
 		else {
-//			var coord = coordFromTileId(tileId);
 			var tile = new Tile(tileId);
 			_tiles[tileId] = tile;
 			return tile;
@@ -33,7 +32,7 @@ var World = function(para) {
 
 	}
 
-	// public method	
+	// privileged methods
 	this.getParameters = function() {
 		return { width:_width, height:_height, tileCount:_cntTileX, 
 			tileWidth:_tileWidth, tileHeight:_tileHeight};
@@ -49,7 +48,6 @@ var World = function(para) {
 		var ny = Math.floor( item.y / _tileHeight );
 		return  nx + ":" + ny;
 	}
-
 
 	this.addItem = function(item) {
 		var tileId = this.tileIdFromItem(item);
