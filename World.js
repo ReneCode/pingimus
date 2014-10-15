@@ -2,10 +2,10 @@ var Tile = require('./Tile.js');
 
 var World = function(para) {
 	var _self = this;
-	var _width = para.width ? para.width : 10000;
-	var _height = para.height ? para.width : 10000;
-	var _cntTileX = para.tileCount ? para.tileCount : 100;
-	var _cntTileY = para.tileCount ? para.tileCount : 100;
+	var _width = para.width || 10000;
+	var _height = para.height || 10000;
+	var _cntTileX = para.tileCount ||  100;
+	var _cntTileY = para.tileCount || 100;
 	var _tileWidth = Math.floor(_width / _cntTileX)
 	var _tileHeight = Math.floor(_height / _cntTileY)
 	var _tiles = {};

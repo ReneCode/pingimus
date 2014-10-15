@@ -79,7 +79,8 @@ describe('Tile#setItem', function() {
 		var tile1 = world.addItem(i1);
 		var i2 = {x:41, y:37, name:'b'};
 		var tile2 = world.addItem(i2);
-		expect(tile2.getItems()).to.eql([i1, i2]);
+		expect(tile2.getItems()).to.eql([{x:49, y:31, name:'a', tileId:"4:3"}, 
+									     {x:41, y:37, name:'b', tileId:"4:3"}]);
 	});
 
 });

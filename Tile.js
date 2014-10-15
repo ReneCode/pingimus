@@ -14,6 +14,5 @@ Tile.prototype.addItem = function(item) {
 	item.tileId = this.id;
 };
 
-//Tile.prototype.createTileId = function()
 
 module.exports = Tile;
