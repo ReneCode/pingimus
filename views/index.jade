@@ -4,20 +4,12 @@ block content
 	h1= title
 	p Welcome to #{title}
 
+	div.canvas
+		canvas#cvp
 	ul(id="messages")
 	form(action="")
 		input(id="m" autocomplete="off" autofocus)
 		button Send
-	script.
-		var socket = io();
-		$('form').submit(function(){
-		  // send input
-		  socket.emit('chat message', $('#m').val());
-		  // clear input
-		  $('#m').val('');
-		  return false;
-		});
-		socket.on('chat message', function(msg){
-		  // receive message
-		  $('#messages').append($('<li>').text(msg));
-		});
+
+	script(src="/javascripts/Picture.js")
+	script(src="/javascripts/scripts.js")

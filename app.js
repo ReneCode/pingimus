@@ -2,8 +2,9 @@
 var express = require('express');
 var app = express();
 var path = require('path');
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
@@ -15,11 +16,22 @@ app.get('/', function(req, res) {
 });
 
 
-io.on('connection', function(socket){
+io.on('connection', function(client){
 	console.log('a user connected');
-	socket.on('chat message', function(msg){
-		console.log('message:' + msg);
-		io.emit('chat message', msg);
+	if (!client.usernameSet) {
+		client.emit('join', "please enter your name:");
+	}
+	client.on('join', function(user) {
+		client.username = user;
+		client.usernameSet = true;
+		console.log("user:" + user + " joined:");
+	});	
+	client.on('pmsg', function(msg) {
+		console.log(client.username + ':' + msg);
+		// send back to client
+		client.emit('pmsg', msg);
+		// send to all other clients
+		client.broadcast.emit('chat message', msg);
 	});
 	// socket.on('disconnect', function(){
 	// 	console.log('user disconnect');
@@ -27,8 +39,7 @@ io.on('connection', function(socket){
 });
 
 
-
-http.listen(3000, function() {
+server.listen(8080, function() {
 	console.log('listening on *:3000');
 });
 

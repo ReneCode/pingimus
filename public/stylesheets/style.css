@@ -9,6 +9,17 @@ body {
 	Helvetica, Arial; 
 }
 
+div .canvas {
+	background-color: #555555;
+	padding: 4px;
+	margin: 5px;
+}
+
+#cvp {
+	border: 2px solid #252525;
+
+
+}
 form { 
 	background: #000; 
 	padding: 3px; 
