@@ -31,16 +31,16 @@ io.on('connection', function(client){
 		// send back to client
 		client.emit('pmsg', msg);
 		// send to all other clients
-		client.broadcast.emit('chat message', msg);
+		client.broadcast.emit('pmsg', msg);
 	});
 	// socket.on('disconnect', function(){
 	// 	console.log('user disconnect');
 	// });
 });
 
-
-server.listen(8080, function() {
-	console.log('listening on *:3000');
+var port = 8080;
+server.listen(port, function() {
+	console.log('listening on %d', port);
 });
 
 
