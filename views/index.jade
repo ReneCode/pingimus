@@ -2,14 +2,13 @@ extends layout
 
 block content
 	h1= title
-	p Welcome to #{title}
 
 	div.canvas
 		canvas#cvp
 	ul(id="messages")
 	form(action="")
-		input(id="m" autocomplete="off" autofocus)
+		input(id="m" autocomplete="off" autofocus float="left")
+		input(id="user" float="right")
 		button Send
-
 	script(src="/javascripts/Picture.js")
 	script(src="/javascripts/scripts.js")

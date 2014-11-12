@@ -5,6 +5,7 @@ var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+//var route = require('./route/index.js');
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));

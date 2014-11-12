@@ -2,10 +2,19 @@
   "name": "Socket-chat-example",
   "version": "0.0.1",
   "descrtiption": "my first socket.io app",
+  "main": "app.js",
   "dependencies": {
     "express": "^3.0.1",
     "socket.io": "1.2.0",
     "path": "~0.4.9",
     "jade": "~1.6.0"
+  },
+  "scripts": {
+    "test": "mocha test",
+    "run": "nodemon app.js"
+  },
+  "devDependencies": {
+    "expect.js": "~0.1.1",
+    "mocha": "~1.21.4"
   }
 }
