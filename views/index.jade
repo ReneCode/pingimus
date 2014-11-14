@@ -1,14 +1,25 @@
 extends layout
 
 block content
-	h1= title
+	nav.navbar.navbar-default(role="navigation")
+		div.container-fluid
+			div.navbar-header
+				a.navbar-brand(href="#") Pingimus
+			div.collapse.navbar-collapse
+				p.navbar-text#username /name
+				p.navbar-text#follower /follower
+				p.navbar-text#status /status
 
-	div.canvas
-		canvas#cvp
-	ul(id="messages")
-	form(action="")
-		input(id="m" autocomplete="off" autofocus float="left")
-		input(id="user" float="right")
-		button Send
+	div.main
+		div.canvas
+			canvas#cvp
+		ul(id="messages")
+
+
+	div.footer
+		form(action="")
+			input(id="m" autocomplete="off" autofocus float="left")
+			button Send
+
 	script(src="/javascripts/Picture.js")
 	script(src="/javascripts/scripts.js")

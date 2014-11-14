@@ -15,6 +15,8 @@ var doMouseDown = function(event) {
 }
 
 
+/**
+*/
 $(document).ready( function init() {
   var canvas = $('#cvp')[0];
   console.log(canvas);
@@ -45,7 +47,7 @@ socket.on('join', function(msg) {
 socket.on('pmsg', function(msg){
   // receive message
   console.log("receive msg:", msg);
-  $('#messages').append($('<li>').text(msg));
+  $('#status').val(msg);
   Picture.receiveMessage(msg);
 });
 

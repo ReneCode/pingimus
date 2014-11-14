@@ -1,16 +1,24 @@
 * { 
 	margin: 0; 
 	padding: 0; 
-	box-sizing: border-box; 
-}
+
 
 body { 
 	font: 13px 
 	Helvetica, Arial; 
 }
 
+div .header {
+	border: 3px solid #880000;
+	height: 30px;
+	width: 100px;
+}
+
+
 div .canvas {
-	background-color: #555555;
+	border: 3px solid #00ee00;
+	width: 400px;
+	height: 200px;
 	padding: 4px;
 	margin: 5px;
 }
@@ -37,7 +45,7 @@ form input {
 
 form button { 
 	width: 9%; 
-	background: rgb(130, 224, 255); 
+	background: #2266ee; 
 	border: none; 
 	padding: 10px; 
 }
