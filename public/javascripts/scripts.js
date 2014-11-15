@@ -10,8 +10,8 @@ var getMousePosition = function(canvas, evt) {
 var doMouseDown = function(event) {
   var canvas = $('#cvp')[0];
   var pt = getMousePosition(canvas, event);
-  console.log("x:%d y:%d", pt.x, pt.y);
-  emitCanvasMessage(pt);
+//  console.log("x:%d y:%d", pt.x, pt.y);
+  sendCanvasCmd(pt);
 }
 
 
@@ -19,42 +19,46 @@ var doMouseDown = function(event) {
 */
 $(document).ready( function init() {
   var canvas = $('#cvp')[0];
-  console.log(canvas);
+//  console.log(canvas);
   canvas.addEventListener('mousedown', doMouseDown, false);
+
+  $('form').submit(sendUserCommand);
 });
 
 
-/*
-var canvas = $('#cvp')[0];
-if (canvas) {
-	canvas.on('mousedown', Picture.mouseDown, false);
-}
-*/
-var socket = io();
-$('form').submit(function(){
+var sendUserCommand = function() {
   // send input
-  socket.emit('pmsg', $('#m').val());
+  var cmd = $('#cmd').val();
   // clear input
-  $('#m').val('');
+  $('#cmd').val('');
+
+  sendCommandToServer(cmd);
   return false;
-});
+}
 
-socket.on('join', function(msg) {
-	var user = prompt(msg);
-	socket.emit('join', user);
-});
-
-socket.on('pmsg', function(msg){
-  // receive message
-  console.log("receive msg:", msg);
-  $('#status').val(msg);
-  Picture.receiveMessage(msg);
-});
-
-var emitCanvasMessage = function(pt) {
+var sendCanvasCmd = function(pt) {
   if (pt) {
-    var msg = "rect," + (pt.x - 10.0) + "," + (pt.y - 10.0) + ",20,20";
-    socket.emit('pmsg', msg);    
+    var cmd = "rect," + (pt.x - 10.0) + "," + (pt.y - 10.0) + ",20,20";
+    sendCommandToServer(cmd);
   }
 }
 
+
+var receiveDataFromServer = function(data) {
+  console.log("server:" + data);
+}
+
+var sendCommandToServer = function(cmd) {
+  $.ajax({
+    type: 'GET',
+    url: "/cmd",
+    data: {
+      format: 'json',
+      cmd: cmd
+    },
+    success: function(data) {
+      receiveDataFromServer(data);
+    }
+  });
+
+}
