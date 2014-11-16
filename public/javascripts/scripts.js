@@ -1,4 +1,7 @@
 
+var userId = undefined;
+
+
 var getMousePosition = function(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
   return {
@@ -28,24 +31,36 @@ $(document).ready( function init() {
 
 var sendUserCommand = function() {
   // send input
-  var cmd = $('#cmd').val();
+  var text = $('#cmd').val();
   // clear input
   $('#cmd').val('');
 
-  sendCommandToServer(cmd);
+  var aCmd = text.split(' ');
+  var sCmd = aCmd.shift();
+  text = aCmd.join(' ');
+  sendCommandToServer({cmd:sCmd, data:text});
   return false;
 }
 
 var sendCanvasCmd = function(pt) {
   if (pt) {
-    var cmd = "rect," + (pt.x - 10.0) + "," + (pt.y - 10.0) + ",20,20";
+    var cmd = {cmd:"paint",
+               data:"rect," + (pt.x - 10.0) + "," + (pt.y - 10.0) + ",20,20" };
     sendCommandToServer(cmd);
   }
 }
 
 
 var receiveDataFromServer = function(data) {
-  console.log("server:" + data);
+  console.log("server:" + data.cmd);
+  switch (data.cmd) {
+    case 'login':
+      if (data.result == true) {
+        // login ok,
+        userId = data.userId;
+        $('#username').html(userId);
+      }
+  }
 }
 
 var sendCommandToServer = function(cmd) {
@@ -54,6 +69,7 @@ var sendCommandToServer = function(cmd) {
     url: "/cmd",
     data: {
       format: 'json',
+      userId: userId,
       cmd: cmd
     },
     success: function(data) {
