@@ -60,6 +60,21 @@ var receiveDataFromServer = function(data) {
         userId = data.userId;
         $('#username').html(userId);
       }
+      break;
+
+    case 'getfollower':
+      if (data.result == true) {
+        var follower = data.follower;
+        if (follower) {
+          $('#follower').html(follower.join(','));
+        }
+        else {
+          $('#follower').html('');
+        }
+
+      }
+
+      
   }
 }
 

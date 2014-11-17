@@ -25,13 +25,22 @@ var CommandRouter = (function() {
 				break;
 
 			case 'paint':
-				Paint.cmd(userId, cmd.data);
+				Paint.paint(userId, cmd.data);
+				break;
+
+			case 'getpaint':
+				var paint = Paint.getAllPaints(userId);
+				res.send({cmd:sCmd, result:true, getpaint:paint});
 				break;
 
 			case 'follow':
-				Follow.follow(userId, cmd.Data);
+				Follow.follow(userId, cmd.data);
 				break;
 
+			case 'getfollower':
+				var follower = Follow.getMyFollower(userId);
+				res.send({cmd:sCmd, result:true, follower:follower});
+				break;
 		}
 	};
 

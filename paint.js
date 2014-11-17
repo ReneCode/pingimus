@@ -1,5 +1,6 @@
 "use strict"
 
+var Follow = require('./follow');
 
 var Paint = function() {
 	
@@ -9,24 +10,28 @@ var Paint = function() {
 		list.push( {userId:userId, cmd:cmd});
 	}
 
-	var _getAll = function(userId) {
-		var myList = [];
+	var _getAllPaints = function(userId) {
+		var allPaint = [];
 
+		follower = Follow.getMyFollower(userId);
 		list.forEach( function(p) {
-			if (p.userId == userId) {
-				myList.push(p.cmd);
+			// if that paint was created by on user out of my follower-list
+			// than that its paint.cmd
+			if (follower.indexOf(p.userId) >= 0) {
+				allPaint.push(p.cmd);
 			}
 		});
-		return myList;
+		return allPaint;
 	}
+
 
 	return {
 		paint: function(userId, cmd) {
 			_paint(userId, cmd);
 		},
 
-		getAll: function(userId) {
-
+		getAllPaints: function(userId) {
+			_getAllPaints(userId)
 		}
 	}
 }();
