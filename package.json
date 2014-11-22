@@ -1,13 +1,13 @@
 {
-  "name": "Socket-chat-example",
+  "name": "pingimus",
   "version": "0.0.1",
-  "descrtiption": "my first socket.io app",
+  "descrtiption": "paint an share",
   "main": "app.js",
   "dependencies": {
     "express": "^3.0.1",
-    "socket.io": "1.2.0",
     "path": "~0.4.9",
-    "jade": "~1.6.0"
+    "jade": "~1.6.0",
+    "redis": "~0.12.1"
   },
   "scripts": {
     "test": "mocha test",
