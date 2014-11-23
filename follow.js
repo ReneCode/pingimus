@@ -1,5 +1,7 @@
 "use strict"
 
+var PingimusDb = require('./pingimusdb');
+
 
 var Follow = function(){
 

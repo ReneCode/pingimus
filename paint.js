@@ -13,7 +13,7 @@ var Paint = function() {
 	var _getAllPaints = function(userId) {
 		var allPaint = [];
 
-		follower = Follow.getMyFollower(userId);
+		follower = Follow.whomDoIFollow(userId);
 		list.forEach( function(p) {
 			// if that paint was created by on user out of my follower-list
 			// than that its paint.cmd
