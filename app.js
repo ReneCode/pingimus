@@ -44,7 +44,8 @@ app.post('/login', function(req, res) {
 });
 
 app.get('/', function(req, res) {
-	res.render('index');
+	var user = req.session.userId;
+	res.render('index', {user:user});
 });
 
 app.get('/cmd', function(req, res) {

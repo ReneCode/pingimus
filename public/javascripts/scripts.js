@@ -18,9 +18,8 @@ var doMouseDown = function(event) {
 }
 
 
-/**
-*/
-$(document).ready( function init() {
+$(function() {
+  // DOM is ready
   var canvas = $('#cvp')[0];
 //  console.log(canvas);
   canvas.addEventListener('mousedown', doMouseDown, false);
@@ -28,6 +27,18 @@ $(document).ready( function init() {
   $('form').submit(sendUserCommand);
 });
 
+
+/**
+*/
+/*
+$(document).ready( function init() {
+  var canvas = $('#cvp')[0];
+//  console.log(canvas);
+  canvas.addEventListener('mousedown', doMouseDown, false);
+
+  $('form').submit(sendUserCommand);
+});
+*/
 
 var sendUserCommand = function() {
   // send input
