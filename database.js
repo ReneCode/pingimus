@@ -3,7 +3,7 @@
 
 var redis = require('redis');
 
-var PingimusDb = function() {
+var Database = function() {
 
 
 	return {
@@ -11,10 +11,13 @@ var PingimusDb = function() {
 			return _storeUser(user);
 		},
 		
+		loadUser: function(username) {
+			
+		}
 	}
 
 }();
 
 
-module.exports = PingimusDb;
+module.exports = Database;
 
