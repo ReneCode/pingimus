@@ -1,14 +1,17 @@
 
 var SessionHandler = require('./SessionHandler');
-var sessionHandler = new SessionHandler();
 
-var route = function(app) {
+var route = function(app, database) {
+	var sessionHandler = new SessionHandler(database);
 
 	// middleware
 	app.use( sessionHandler.checkIfLoggedIn );
 
 	app.post('/login', sessionHandler.handleLogin );
 	app.get ('/login', sessionHandler.showLoginPage );
+
+	app.post('/signup', sessionHandler.handleSignup);
+	app.get('/signup', sessionHandler.showSignupPage);
 
 	app.get ('/', sessionHandler.showRootPage );
 	

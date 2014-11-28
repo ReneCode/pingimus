@@ -40,26 +40,14 @@ var Database = function() {
 
 	};
 
-	this.getUserFromSessionId = function(sessionId, callback) {
+	this.getUserIdFromSessionId = function(sessionId, callback) {
 		client.hget(KEY_USER_SESSION, sessionId, function(err, result){
-			console.log("err %s / %s", err, result);
 			if (err) {
 				callback(err, null);
 			}
 			else {
 				if (result) {
 					callback(null, {id:result});
-					/*
-					this.getUserFromId(result, function(err, user) {
-						if (err) {
-							callback(err, null);
-						}
-						else {
-							callback(null, user);
-						}
-					});
-*/
-
 				}
 				else {
 					callback('session not found', null);
@@ -75,6 +63,7 @@ var Database = function() {
 			}
 			else {
 				user.id=result;
+				// make string out of user-object
 				client.hset(KEY_USER, result, JSON.stringify(user), function(err, result) {
 					if (err) {
 						callback(err, null);
@@ -90,6 +79,8 @@ var Database = function() {
 
 	this.getUserFromId = function(id, callback) {
 		client.hget(KEY_USER, id, function(err, user) {
+			// convert to object
+			user = JSON.parse(user);
 			if (err) {
 				callback(err, null);
 			}

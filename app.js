@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var routes = require('./routes/index');
-var database = require('./routes/db/database');
+var Database = require('./routes/db/database');
 
 // for sessions
 app.use(express.cookieParser());
@@ -24,7 +24,7 @@ if (app.get('env') == 'development') {
 
 
 var database = new Database();
-database.connect( function(err, db) {
+database.connect( function(err) {
 	// route requests
 	routes(app, database);
 

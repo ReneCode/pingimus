@@ -24,17 +24,16 @@ describe('Database connect', function() {
 	beforeEach( function(done) {
 		db.connect( function(err){
 			db.clearDb();
-			done()
-
+			done();
 		});
 	});
 
-	it ('setUserSession + getUserFromSessionId', function(done) {
+	it ('setUserSession + getUserIdFromSessionId', function(done) {
 		db.setUserSession(42, {user:'abc', id:'4711'}, function(err,data) {
 			expect(err).to.be(null);
 			expect(data).to.be(1);
 
-			db.getUserFromSessionId(42, function(err, user){
+			db.getUserIdFromSessionId(42, function(err, user){
 				expect(user).to.exist;
 				expect(user.id).to.be('4711');
 				done();
@@ -44,12 +43,12 @@ describe('Database connect', function() {
 	});
 
 
-	it ('setUserSession + other getUserFromSessionId', function(done) {
+	it ('setUserSession + other getUserIdFromSessionId', function(done) {
 		db.setUserSession(42, {user:'abc', id:'4711'}, function(err,data) {
 			expect(err).to.be(null);
 			expect(data).to.be(1);
 
-			db.getUserFromSessionId(43, function(err, user){
+			db.getUserIdFromSessionId(43, function(err, user){
 				expect(user).to.be(null);
 				done();
 			});
@@ -57,8 +56,8 @@ describe('Database connect', function() {
 		});
 	});
 
-	it ('getUserFromSessionId of empty', function(done) {
-		db.getUserFromSessionId(42, function(err, user){
+	it ('getUserIdFromSessionId of empty', function(done) {
+		db.getUserIdFromSessionId(42, function(err, user){
 			expect(err).to.be('session not found');
 			expect(user).to.be(null);
 			done();
@@ -84,6 +83,37 @@ describe('Database connect', function() {
 		});
 	});
 
+	it ('createNewUser + getUserFromId', function(done) {
+		db.createNewUser({name:"abc", age:47}, function(err, user){
+			expect(err).to.be(null);
+			expect(user.name).to.be("abc");
+			expect(user.age).to.be(47);
+			expect(user.id).to.be(1);
+
+			db.createNewUser({name:"xyz", age:66}, function(err, user){
+				expect(err).to.be(null);
+				expect(user.name).to.be("xyz");
+				expect(user.age).to.be(66);
+				expect(user.id).to.be(2);
+
+				db.getUserFromId(1, function(err, user) {
+					expect(err).to.be(null);
+					expect(user.name).to.be("abc");
+					expect(user.age).to.be(47);
+					expect(user.id).to.be(1);
+	
+					db.getUserFromId(2, function(err, user) {
+						expect(err).to.be(null);
+						expect(user.name).to.be("xyz");
+						expect(user.age).to.be(66);
+						expect(user.id).to.be(2);
+			
+						done();
+					});
+				});
+			});
+		});
+	});
 
 
 });
