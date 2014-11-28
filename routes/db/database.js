@@ -56,7 +56,7 @@ var Database = function() {
 		});
 	};
 
-	this.createNewUser = function(user, callback) {
+	this.addNewUser = function(user, callback) {
 		client.incr(KEY_USER_ID, function(err, result) {
 			if (err) {
 				callback(err, null);

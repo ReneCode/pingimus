@@ -1,5 +1,6 @@
 
 //var Database = require('./db/database');
+var User = require('./user');
 
 var SessionHandler = function (db) {
 
@@ -67,7 +68,16 @@ var SessionHandler = function (db) {
 		var confirm_password = req.body.confirm_password;
 
 		if (password != confirm_password) {
-			res.render('signup', {username:username, password:"", error:"password not identical"});
+			res.render('signup', {username:username, password:"", error:"password not identical"});			
+		}
+		user = User.create(username, password);
+		if ( database.addUser(user) ) {
+			database.addUserSession(user["id"], function(err, sessionId) {
+				if (!err) {
+					res.cookie('session', sessionId);
+					return res.redirect("/welcome");
+				}
+			});
 		}
 	};
 
