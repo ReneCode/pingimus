@@ -6,7 +6,7 @@ var User = function() {
 
 	var _create = function(name, clearPassword, callback) {
 		var salt = crypto.randomBytes(128).toString('base64');
-		crypto.pbkdf2(clearPassword, salt, 10000, 128, function(err, key) {
+		crypto.pbkdf2(clearPassword, salt, 472, 128, function(err, key) {
 			if (err) {
 				callback(err, null);
 			}
@@ -18,7 +18,7 @@ var User = function() {
 	};
 
 	var _validatePassword = function(user, clearPassword, callback) {
-		crypto.pbkdf2(clearPassword, user.salt, 10000, 128, function(err, key) {
+		crypto.pbkdf2(clearPassword, user.salt, 472, 128, function(err, key) {
 			if (err) {
 				callback(err, null);
 			}
