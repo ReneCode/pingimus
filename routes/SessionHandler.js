@@ -15,35 +15,23 @@ var SessionHandler = function (db) {
 		}
 
 		var sessionId = req.cookies.session;
-		if (!req.cookies.userId) {
+		console.dir(sessionId);
+		if (!sessionId) {
 			res.redirect('/login');
 		}
 		else {
-			database.getUserIdFromSessionId(req.cookies.userId, function(err, user) {
-				if (!err  &&  user.id) {
-					req.session.user = user;
+			database.getSession(sessionId, function(err, userid) {
+				if (!err  &&  userid) {
+					req.session.userid = userid;
 					next();
 				}
 				else {
+					console.log("session not found:%s",  sessionId);
 					res.redirect('/login');
 				}
 			});
 		}
-		/*
-		if (!req.session.userId) {
-			if (req.url == '/login') {
-				next();
-			}
-			else {
-				res.render('login');
-			}
-		}
-		else {
-			next();
-		}
-		*/
 	};
-
 
 
 	this.handleLogin = function(req, res) {
@@ -57,12 +45,20 @@ var SessionHandler = function (db) {
 		res.render('login', {username:"", password:"", error:""});
 	};
 
+
+	this.handleLogout = function(req, res) {
+		var sessionId = req.cookies.session;
+
+		database.deleteSession(sessionId, function(err, result) {
+			res.redirect("/");
+		});	
+	}
+
 	this.showSignupPage = function(req, res) {
 		res.render('signup', {username:"", password:"", error:""});
 	};
 
 	this.handleSignup = function(req, res) {
-		console.dir(req.body);
 		var username = req.body.username;
 		var password = req.body.password;
 		var confirm_password = req.body.confirm_password;
@@ -75,15 +71,15 @@ var SessionHandler = function (db) {
 			if (err) {
 				// todo
 			}
-			database.addNewUser(user, function(err, result) {
+			database.addUser(user, function(err, result) {
 				if (err) {
 					// todo
 				}
 				else {
-					database.addNewSession(user, function(err, sessionId) {
+					database.addSession(user.id, function(err, sessionId) {
 						if (!err) {
 							res.cookie('session', sessionId);
-							return res.redirect("/welcome");
+							return res.redirect("/");
 						}
 					});
 
@@ -96,7 +92,13 @@ var SessionHandler = function (db) {
 	};
 
 	this.showRootPage = function(req, res) {
-		res.render('index');
+		var userId = req.session.userid;
+		database.getUser(userId, function(err, user) {
+			if (!err) {
+				res.render('index', {username:user.name});
+
+			}
+		})
 	};
 };
 

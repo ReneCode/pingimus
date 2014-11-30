@@ -13,6 +13,8 @@ var route = function(app, database) {
 	app.post('/signup', sessionHandler.handleSignup);
 	app.get('/signup', sessionHandler.showSignupPage);
 
+	app.get('/logout', sessionHandler.handleLogout);
+
 	app.get ('/', sessionHandler.showRootPage );
 	
 	app.get('/cmd', function(req, res) {

@@ -2,7 +2,7 @@
 var redis = require('redis');
 var crypto = require('crypto');
 
-var KEY_USER_SESSION = 'us';
+var KEY_SESSION = 'ses:';
 var KEY_USER = 'usr:';
 var KEY_USER_ID = 'usrkey'
 
@@ -33,25 +33,25 @@ var Database = function() {
 		var random = Math.random().toString();
 		var sessionId = crypto.createHash('sha1').update(current_date + random).digest('hex');
 
-		client.hset(KEY_USER_SESSION, sessionId, userId, function(err, result) {
+		client.hset(KEY_SESSION, sessionId, userId, function(err, result) {
 			if (err) {
 				callback(err, null);
 			}
 			else {
 				// 
-				callback(null, {result:result, sessionid:sessionId});
+				callback(null, sessionId);
 			}
 		});
 	};
 
 	this.getSession = function(sessionId, callback) {
-		client.hget(KEY_USER_SESSION, sessionId, function(err, result){
+		client.hget(KEY_SESSION, sessionId, function(err, result){
 			if (err) {
 				callback(err, null);
 			}
 			else {
 				if (result) {
-					callback(null, {userid:result});
+					callback(null, result);
 				}
 				else {
 					callback('session not found', null);
@@ -60,7 +60,18 @@ var Database = function() {
 		});
 	};
 
-	this.addNewUser = function(u, callback) {
+	this.deleteSession = function(sessionId, callback) {
+		client.hdel(KEY_SESSION, sessionId, function(err, result) {
+			if (err) {
+				callback(err, null);
+			}
+			else {
+				callback(null, result);
+			}
+		});
+	}
+
+	this.addUser = function(u, callback) {
 		var user = u;
 		client.incr(KEY_USER_ID, function(err, result) {
 			if (err) {
@@ -82,8 +93,8 @@ var Database = function() {
 	};
 	
 
-	this.getUserFromId = function(id, callback) {
-		client.hget(KEY_USER, id, function(err, user) {
+	this.getUser = function(userId, callback) {
+		client.hget(KEY_USER, userId, function(err, user) {
 			// convert to object
 			user = JSON.parse(user);
 			if (err) {
