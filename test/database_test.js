@@ -65,14 +65,14 @@ describe('Database connect', function() {
 	});
 
 
-	it ('createNewUser', function(done) {
-		db.createNewUser({name:"abc", age:47}, function(err, user){
+	it ('addNewUser', function(done) {
+		db.addNewUser({name:"abc", age:47}, function(err, user){
 			expect(err).to.be(null);
 			expect(user.name).to.be("abc");
 			expect(user.age).to.be(47);
 			expect(user.id).to.be(1);
 
-			db.createNewUser({name:"xyz", age:66}, function(err, user){
+			db.addNewUser({name:"xyz", age:66}, function(err, user){
 				expect(err).to.be(null);
 				expect(user.name).to.be("xyz");
 				expect(user.age).to.be(66);
@@ -83,14 +83,14 @@ describe('Database connect', function() {
 		});
 	});
 
-	it ('createNewUser + getUserFromId', function(done) {
-		db.createNewUser({name:"abc", age:47}, function(err, user){
+	it ('addNewUser + getUserFromId', function(done) {
+		db.addNewUser({name:"abc", age:47}, function(err, user){
 			expect(err).to.be(null);
 			expect(user.name).to.be("abc");
 			expect(user.age).to.be(47);
 			expect(user.id).to.be(1);
 
-			db.createNewUser({name:"xyz", age:66}, function(err, user){
+			db.addNewUser({name:"xyz", age:66}, function(err, user){
 				expect(err).to.be(null);
 				expect(user.name).to.be("xyz");
 				expect(user.age).to.be(66);
