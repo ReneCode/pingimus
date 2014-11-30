@@ -28,14 +28,14 @@ describe('Database connect', function() {
 		});
 	});
 
-	it ('setUserSession + getUserIdFromSessionId', function(done) {
-		db.setUserSession(42, {user:'abc', id:'4711'}, function(err,data) {
+	it ('addSession + getSession', function(done) {
+		db.addSession("reneId47", function(err,data) {
 			expect(err).to.be(null);
-			expect(data).to.be(1);
-
-			db.getUserIdFromSessionId(42, function(err, user){
-				expect(user).to.exist;
-				expect(user.id).to.be('4711');
+			expect(data.result).to.be(1);
+			var sessionId = data.sessionid;
+			db.getSession(sessionId, function(err, data){
+				expect(data).to.exist;
+				expect(data.userid).to.be('reneId47');
 				done();
 			});
 
@@ -43,12 +43,13 @@ describe('Database connect', function() {
 	});
 
 
-	it ('setUserSession + other getUserIdFromSessionId', function(done) {
-		db.setUserSession(42, {user:'abc', id:'4711'}, function(err,data) {
+	it ('addSession + other getSession', function(done) {
+		db.addSession("rene", function(err,data) {
 			expect(err).to.be(null);
-			expect(data).to.be(1);
+			expect(data.result).to.be(1);
+			expect(data.sessionid.length).to.be.above(20);
 
-			db.getUserIdFromSessionId(43, function(err, user){
+			db.getSession(43, function(err, user){
 				expect(user).to.be(null);
 				done();
 			});
@@ -56,8 +57,8 @@ describe('Database connect', function() {
 		});
 	});
 
-	it ('getUserIdFromSessionId of empty', function(done) {
-		db.getUserIdFromSessionId(42, function(err, user){
+	it ('getSession of empty', function(done) {
+		db.getSession(42, function(err, user){
 			expect(err).to.be('session not found');
 			expect(user).to.be(null);
 			done();
@@ -65,14 +66,14 @@ describe('Database connect', function() {
 	});
 
 
-	it ('createNewUser', function(done) {
-		db.createNewUser({name:"abc", age:47}, function(err, user){
+	it ('addNewUser', function(done) {
+		db.addNewUser({name:"abc", age:47}, function(err, user){
 			expect(err).to.be(null);
 			expect(user.name).to.be("abc");
 			expect(user.age).to.be(47);
 			expect(user.id).to.be(1);
 
-			db.createNewUser({name:"xyz", age:66}, function(err, user){
+			db.addNewUser({name:"xyz", age:66}, function(err, user){
 				expect(err).to.be(null);
 				expect(user.name).to.be("xyz");
 				expect(user.age).to.be(66);
@@ -83,14 +84,14 @@ describe('Database connect', function() {
 		});
 	});
 
-	it ('createNewUser + getUserFromId', function(done) {
-		db.createNewUser({name:"abc", age:47}, function(err, user){
+	it ('addNewUser + getUserFromId', function(done) {
+		db.addNewUser({name:"abc", age:47}, function(err, user){
 			expect(err).to.be(null);
 			expect(user.name).to.be("abc");
 			expect(user.age).to.be(47);
 			expect(user.id).to.be(1);
 
-			db.createNewUser({name:"xyz", age:66}, function(err, user){
+			db.addNewUser({name:"xyz", age:66}, function(err, user){
 				expect(err).to.be(null);
 				expect(user.name).to.be("xyz");
 				expect(user.age).to.be(66);

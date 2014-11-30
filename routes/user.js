@@ -4,9 +4,6 @@ var crypto = require('crypto');
 
 var User = function() {
 
-	/**
-		callback(err, user)
-	*/
 	var _create = function(name, clearPassword, callback) {
 		var salt = crypto.randomBytes(128).toString('base64');
 		crypto.pbkdf2(clearPassword, salt, 10000, 128, function(err, key) {
@@ -40,10 +37,19 @@ var User = function() {
 
 
 	return {
+		/**
+			callback(err, user)
+				user.name
+				user.password (crypted)
+				user.salt (internal)
+		*/
 		create: function(name, clearPassword, callback) {
 			return _create(name, clearPassword, callback);
 		},
 
+		/**
+			callback(err, "ok" | "invalid password")			
+		*/
 		validatePassword: function(user, clearPassword, callback) {
 			return _validatePassword(user, clearPassword, callback);
 		}

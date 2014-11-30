@@ -6,6 +6,7 @@ var SessionHandler = function (db) {
 
 	var database = db;
 
+
 	this.checkIfLoggedIn = function(req, res, next) {
 
 		if (req.url == '/login'  ||
@@ -14,7 +15,6 @@ var SessionHandler = function (db) {
 		}
 
 		var sessionId = req.cookies.session;
-		console.dir(req.cookies);
 		if (!req.cookies.userId) {
 			res.redirect('/login');
 		}
@@ -54,7 +54,7 @@ var SessionHandler = function (db) {
 	};
 
 	this.showLoginPage = function(req, res) {
-		res.render('login');
+		res.render('login', {username:"", password:"", error:""});
 	};
 
 	this.showSignupPage = function(req, res) {
@@ -68,17 +68,31 @@ var SessionHandler = function (db) {
 		var confirm_password = req.body.confirm_password;
 
 		if (password != confirm_password) {
-			res.render('signup', {username:username, password:"", error:"password not identical"});			
+			return res.render('signup', {username:username, password:"", error:"password not identical"});			
 		}
-		user = User.create(username, password);
-		if ( database.addUser(user) ) {
-			database.addUserSession(user["id"], function(err, sessionId) {
-				if (!err) {
-					res.cookie('session', sessionId);
-					return res.redirect("/welcome");
+		// create user-object
+		User.create(username, password, function(err, user) {
+			if (err) {
+				// todo
+			}
+			database.addNewUser(user, function(err, result) {
+				if (err) {
+					// todo
 				}
+				else {
+					database.addNewSession(user, function(err, sessionId) {
+						if (!err) {
+							res.cookie('session', sessionId);
+							return res.redirect("/welcome");
+						}
+					});
+
+				} 
+
 			});
-		}
+
+
+		});
 	};
 
 	this.showRootPage = function(req, res) {

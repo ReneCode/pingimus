@@ -1,5 +1,6 @@
 
 var redis = require('redis');
+var crypto = require('crypto');
 
 var KEY_USER_SESSION = 'us';
 var KEY_USER = 'usr:';
@@ -26,28 +27,31 @@ var Database = function() {
 		client.flushdb();
 	}
 
-	this.setUserSession = function(sessionId, user, callback) {
-		var userId = user.id;
+	this.addSession = function(userId, callback) {
+		// generate Session id
+		var current_date = (new Date()).valueOf().toString();
+		var random = Math.random().toString();
+		var sessionId = crypto.createHash('sha1').update(current_date + random).digest('hex');
+
 		client.hset(KEY_USER_SESSION, sessionId, userId, function(err, result) {
 			if (err) {
 				callback(err, null);
 			}
 			else {
 				// 
-				callback(null, result);
+				callback(null, {result:result, sessionid:sessionId});
 			}
 		});
-
 	};
 
-	this.getUserIdFromSessionId = function(sessionId, callback) {
+	this.getSession = function(sessionId, callback) {
 		client.hget(KEY_USER_SESSION, sessionId, function(err, result){
 			if (err) {
 				callback(err, null);
 			}
 			else {
 				if (result) {
-					callback(null, {id:result});
+					callback(null, {userid:result});
 				}
 				else {
 					callback('session not found', null);
@@ -56,7 +60,8 @@ var Database = function() {
 		});
 	};
 
-	this.addNewUser = function(user, callback) {
+	this.addNewUser = function(u, callback) {
+		var user = u;
 		client.incr(KEY_USER_ID, function(err, result) {
 			if (err) {
 				callback(err, null);
