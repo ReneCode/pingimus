@@ -20,7 +20,7 @@ describe('user', function() {
 		User.create("name", pw, function(err, user){
 			expect(user.key).to.be("name");
 			User.validatePassword(user, pw, function(err, result) {
-				expect(result).to.be("ok");
+				expect(result).to.be(true);
 				done();
 			});
 		});

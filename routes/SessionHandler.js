@@ -35,10 +35,34 @@ var SessionHandler = function (db) {
 
 
 	this.handleLogin = function(req, res) {
-		var userId = req.body.username;
-		req.session.userId = userId;
-		// login done - now goto main page
-		res.redirect("/")
+		var userKey = req.body.username;
+		var password = req.body.password;
+
+		database.getUser(userKey, function(err, user) {
+			console.dir(userKey);
+			console.dir(err);
+			console.dir(user);
+			if (user) {
+				User.validatePassword(user, password, function(err, result) {
+					if (result === true) {
+						database.addSession(userKey, function(err, sessionId) {
+							res.cookie('session', sessionId);
+							res.redirect("/");
+						});
+					}
+					else {
+						res.render('login', {username:userKey, password:"", error:"invalid password"} );
+					}
+				});
+			} 
+			else {
+				console.log("no user found");
+				res.render('login', {username:userKey, password:"", error:"invalid user"} );
+			}
+		});
+
+
+
 	};
 
 	this.showLoginPage = function(req, res) {
@@ -56,7 +80,9 @@ var SessionHandler = function (db) {
 	}
 
 	this.showSignupPage = function(req, res) {
-		res.render('signup', {username:"", password:"", confirm_password:"", error:""});
+		res.render('signup', {username:"", 
+							password:"", 
+							confirm_password:"", error:""});
 	};
 
 	this.handleSignup = function(req, res) {
@@ -70,7 +96,6 @@ var SessionHandler = function (db) {
 										error:"password not identical"});			
 		}
 		database.existsUser(username, function(err, result) {
-			console.log("check:%s, result:%s", username, result);
 			if (!err  &&  result == true) {
 				return res.render('signup', {username:username, 
 										password:password, 
@@ -90,7 +115,7 @@ var SessionHandler = function (db) {
 					else {
 						database.addSession(user.key, function(err, sessionId) {
 							if (!err) {
-								res.cookie('session', sessionId, { maxAge: 3600, httpOnly: true });
+								res.cookie('session', sessionId);
 								return res.redirect("/");
 							}
 						});

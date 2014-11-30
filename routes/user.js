@@ -25,7 +25,7 @@ var User = function() {
 			else {
 				var cryptPw = key.toString('base64');
 				if (cryptPw == user.password) {
-					callback(null, "ok");
+					callback(null, true);
 				}
 				else {
 					callback(err, "invalid password");
