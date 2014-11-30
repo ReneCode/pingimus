@@ -92,17 +92,15 @@ describe('Database connect', function() {
 
 
 	it ('addUser', function(done) {
-		db.addUser({name:"abc", age:47}, function(err, user){
+		db.addUser({key:"abc", age:47}, function(err, user){
 			expect(err).to.be(null);
-			expect(user.name).to.be("abc");
+			expect(user.key).to.be("abc");
 			expect(user.age).to.be(47);
-			expect(user.id).to.be(1);
 
-			db.addUser({name:"xyz", age:66}, function(err, user){
+			db.addUser({key:"xyz", age:66}, function(err, user){
 				expect(err).to.be(null);
-				expect(user.name).to.be("xyz");
+				expect(user.key).to.be("xyz");
 				expect(user.age).to.be(66);
-				expect(user.id).to.be(2);
 
 				done();
 			});
@@ -110,29 +108,25 @@ describe('Database connect', function() {
 	});
 
 	it ('addUser + getUser', function(done) {
-		db.addUser({name:"abc", age:47}, function(err, user){
+		db.addUser({key:"abc", age:47}, function(err, user){
 			expect(err).to.be(null);
-			expect(user.name).to.be("abc");
+			expect(user.key).to.be("abc");
 			expect(user.age).to.be(47);
-			expect(user.id).to.be(1);
 
-			db.addUser({name:"xyz", age:66}, function(err, user){
+			db.addUser({key:"xyz", age:66}, function(err, user){
 				expect(err).to.be(null);
-				expect(user.name).to.be("xyz");
+				expect(user.key).to.be("xyz");
 				expect(user.age).to.be(66);
-				expect(user.id).to.be(2);
 
-				db.getUser(1, function(err, user) {
+				db.getUser("abc", function(err, u1) {
 					expect(err).to.be(null);
-					expect(user.name).to.be("abc");
-					expect(user.age).to.be(47);
-					expect(user.id).to.be(1);
+					expect(u1.key).to.be("abc");
+					expect(u1.age).to.be(47);
 	
-					db.getUser(2, function(err, user) {
+					db.getUser("xyz", function(err, u2) {
 						expect(err).to.be(null);
-						expect(user.name).to.be("xyz");
-						expect(user.age).to.be(66);
-						expect(user.id).to.be(2);
+						expect(u2.key).to.be("xyz");
+						expect(u2.age).to.be(66);
 			
 						done();
 					});
@@ -142,5 +136,31 @@ describe('Database connect', function() {
 	});
 
 
+	it ('existsUser', function(done) {
+		db.addUser({key:"abc", age:47}, function(err, user){
+			expect(err).to.be(null);
+			expect(user.key).to.be("abc");
+			expect(user.age).to.be(47);
+
+			db.addUser({key:"xyz", age:66}, function(err, u2){
+				expect(err).to.be(null);
+				expect(u2.key).to.be("xyz");
+				expect(u2.age).to.be(66);
+
+				db.existsUser("abc", function(err, r1) {
+					expect(r1).to.be(true);
+
+					db.existsUser("123", function(err, r2) {
+						expect(r2).to.be(false);
+
+						db.existsUser("xyz", function(err, r3) {
+							expect(r3).to.be(true);
+							done();
+						});
+					});
+				});
+			});
+		});
+	});
 });
 

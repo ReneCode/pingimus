@@ -27,13 +27,13 @@ var Database = function() {
 		client.flushdb();
 	}
 
-	this.addSession = function(userId, callback) {
+	this.addSession = function(userKey, callback) {
 		// generate Session id
 		var current_date = (new Date()).valueOf().toString();
 		var random = Math.random().toString();
 		var sessionId = crypto.createHash('sha1').update(current_date + random).digest('hex');
 
-		client.hset(KEY_SESSION, sessionId, userId, function(err, result) {
+		client.hset(KEY_SESSION, sessionId, userKey, function(err, result) {
 			if (err) {
 				callback(err, null);
 			}
@@ -71,30 +71,26 @@ var Database = function() {
 		});
 	}
 
-	this.addUser = function(u, callback) {
-		var user = u;
-		client.incr(KEY_USER_ID, function(err, result) {
+
+
+	/**
+		user has to have property "key". This is unique for all users
+	*/
+	this.addUser = function(user, callback) {
+		// make string out of user-object
+		client.hset(KEY_USER, user.key, JSON.stringify(user), function(err, result) {
 			if (err) {
 				callback(err, null);
 			}
 			else {
-				user.id=result;
-				// make string out of user-object
-				client.hset(KEY_USER, result, JSON.stringify(user), function(err, result) {
-					if (err) {
-						callback(err, null);
-					}
-					else {
-						callback(null, user);
-					}
-				});
+				callback(null, user);
 			}
 		});
 	};
 	
 
-	this.getUser = function(userId, callback) {
-		client.hget(KEY_USER, userId, function(err, user) {
+	this.getUser = function(userKey, callback) {
+		client.hget(KEY_USER, userKey, function(err, user) {
 			// convert to object
 			user = JSON.parse(user);
 			if (err) {
@@ -104,8 +100,25 @@ var Database = function() {
 				callback(null, user);
 			}
 		});
-
 	};
+
+	/**
+		callback(err, result)
+			result = true    =>  user already exists
+	*/
+	this.existsUser = function(userKey, callback) {
+		client.hget(KEY_USER, userKey, function(err, user) {
+			if (err) {
+				callback(err, null);
+			}
+			else {
+				callback(null, user ? true: false);
+			}
+		});
+	};
+
+
+
 
 };
 

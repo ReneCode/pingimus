@@ -50,12 +50,13 @@ var SessionHandler = function (db) {
 		var sessionId = req.cookies.session;
 
 		database.deleteSession(sessionId, function(err, result) {
+			res.clearCookie('session');
 			res.redirect("/");
 		});	
 	}
 
 	this.showSignupPage = function(req, res) {
-		res.render('signup', {username:"", password:"", error:""});
+		res.render('signup', {username:"", password:"", confirm_password:"", error:""});
 	};
 
 	this.handleSignup = function(req, res) {
@@ -64,30 +65,38 @@ var SessionHandler = function (db) {
 		var confirm_password = req.body.confirm_password;
 
 		if (password != confirm_password) {
-			return res.render('signup', {username:username, password:"", error:"password not identical"});			
+			return res.render('signup', {username:username, 
+										password:"", 
+										error:"password not identical"});			
 		}
-		// create user-object
-		User.create(username, password, function(err, user) {
-			if (err) {
-				// todo
+		database.existsUser(username, function(err, result) {
+			console.log("check:%s, result:%s", username, result);
+			if (!err  &&  result == true) {
+				return res.render('signup', {username:username, 
+										password:password, 
+										confirm_password:password, 
+										error:"username already is use"});			
 			}
-			database.addUser(user, function(err, result) {
+
+			// create user-object
+			User.create(username, password, function(err, user) {
 				if (err) {
 					// todo
 				}
-				else {
-					database.addSession(user.id, function(err, sessionId) {
-						if (!err) {
-							res.cookie('session', sessionId);
-							return res.redirect("/");
-						}
-					});
-
-				} 
-
+				database.addUser(user, function(err, result) {
+					if (err) {
+						// todo
+					}
+					else {
+						database.addSession(user.key, function(err, sessionId) {
+							if (!err) {
+								res.cookie('session', sessionId, { maxAge: 3600, httpOnly: true });
+								return res.redirect("/");
+							}
+						});
+					} 
+				});
 			});
-
-
 		});
 	};
 
@@ -95,7 +104,7 @@ var SessionHandler = function (db) {
 		var userId = req.session.userid;
 		database.getUser(userId, function(err, user) {
 			if (!err) {
-				res.render('index', {username:user.name});
+				res.render('index', {username:user.key});
 
 			}
 		})
