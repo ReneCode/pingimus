@@ -1,12 +1,12 @@
 
 var userId = undefined;
-
+var paintMode = 'dot';  //
 
 var getMousePosition = function(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
   return {
-    x: evt.clientX - rect.left,
-    y: evt.clientY - rect.top
+    x: parseInt( (evt.clientX - rect.left) * 1000 / rect.width),
+    y: parseInt( (evt.clientY - rect.top) * 1000 / rect.height)
   };
 }
 
@@ -14,15 +14,32 @@ var doMouseDown = function(event) {
   var canvas = $('#cvp')[0];
   var pt = getMousePosition(canvas, event);
 //  console.log("x:%d y:%d", pt.x, pt.y);
-  sendCanvasCmd(pt);
+
+  switch (paintMode) {
+    case 'dot':
+      sendCommandToServer('dot', pt);
+      break;
+
+  }
 }
 
 
-$(function() {
+var doReload = function(event) {
+  console.log("reload");
+  sendCommandToServer('reload', "");
+  return false;
+}
+
+$( function() {
   // DOM is ready
   var canvas = $('#cvp')[0];
-//  console.log(canvas);
+  $('#cvp').css('background-color', 'rgba(158, 167, 184, 0.2)');
+  canvas.width = 400;
+  canvas.height = 400;
   canvas.addEventListener('mousedown', doMouseDown, false);
+
+
+  $("#reload").click(doReload);
 
   $('form').submit(sendUserCommand);
 });
@@ -63,8 +80,15 @@ var sendCanvasCmd = function(pt) {
 
 
 var receiveDataFromServer = function(data) {
-  console.log("server:" + data.cmd);
   switch (data.cmd) {
+    case 'dot':
+      Picture.drawDot(data.para);
+      break;
+
+    case 'reload':
+      Picture.reload(data.para);
+      break;
+
     case 'login':
       if (data.result == true) {
         // login ok,
@@ -84,20 +108,20 @@ var receiveDataFromServer = function(data) {
         }
 
       }
-
-      
   }
 }
 
-var sendCommandToServer = function(cmd) {
+var sendCommandToServer = function(cmd, para) {
+  var data = {
+        cmd: cmd,
+        para: JSON.stringify(para)
+      };
+
   $.ajax({
-    type: 'GET',
-    url: "/cmd",
-    data: {
-      format: 'json',
-      userId: userId,
-      cmd: cmd
-    },
+    type: 'POST',
+    url: '/cmd',
+    dataType: 'json',
+    data: data,
     success: function(data) {
       receiveDataFromServer(data);
     }

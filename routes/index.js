@@ -1,8 +1,10 @@
 
 var SessionHandler = require('./SessionHandler');
+var CommandHandler = require('./CommandHandler');
 
 var route = function(app, database) {
 	var sessionHandler = new SessionHandler(database);
+	var commandHandler = new CommandHandler(database);
 
 	// middleware
 	app.use( sessionHandler.checkIfLoggedIn );
@@ -17,7 +19,9 @@ var route = function(app, database) {
 
 	app.get ('/', sessionHandler.showRootPage );
 	
-	app.get('/cmd', function(req, res) {
+	app.post('/cmd', commandHandler.handleCommand);
+
+	app.get('/test', function(req, res) {
 	//	console.dir(req.query);
 		cmdRouter.route(req, res);
 	});

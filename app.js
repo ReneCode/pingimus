@@ -22,7 +22,6 @@ if (app.get('env') == 'development') {
 	app.use(express.errorHandler());
 }
 
-
 var database = new Database();
 database.connect( function(err) {
 	// route requests

@@ -1,6 +1,7 @@
 
 //var Database = require('./db/database');
 var User = require('./user');
+var Sketch = require('./Sketch');
 
 var SessionHandler = function (db) {
 
@@ -15,7 +16,7 @@ var SessionHandler = function (db) {
 		}
 
 		var sessionId = req.cookies.session;
-		console.dir(sessionId);
+		console.log("session:%s", sessionId);
 		if (!sessionId) {
 			res.redirect('/login');
 		}
@@ -39,9 +40,6 @@ var SessionHandler = function (db) {
 		var password = req.body.password;
 
 		database.getUser(userKey, function(err, user) {
-			console.dir(userKey);
-			console.dir(err);
-			console.dir(user);
 			if (user) {
 				User.validatePassword(user, password, function(err, result) {
 					if (result === true) {
@@ -132,7 +130,25 @@ var SessionHandler = function (db) {
 				res.render('index', {username:user.key});
 
 			}
-		})
+		});
+	};
+
+	this.handleCommand = function(req, res) {
+		var userId = req.session.userid;
+
+		var cmd = req.body.cmd;
+		var para = req.body.para;
+
+		switch (cmd) {
+			case 'dot':
+		}
+
+		console.dir(userId);
+		console.dir(cmd);
+		console.dir(para);
+
+		res.send({cmd:cmd, result:true, para:para});
+
 	};
 };
 

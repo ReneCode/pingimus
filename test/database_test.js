@@ -162,5 +162,49 @@ describe('Database connect', function() {
 			});
 		});
 	});
+
+
+
+	it ('addSketch', function(done) {
+		db.addSketch('abc', {x:46, y:42}, function(err, data) {
+			expect(err).to.be(null);
+			expect(data).to.eql({x:46, y:42});
+			done();
+		});
+	});
+
+	it ('addSketch & getSketch', function(done) {
+		db.addSketch('abc', {x:46, y:42}, function(err, data) {
+			db.getSketch('abc', function(err, result) {
+				expect(err).to.be(null);
+				expect(result).to.eql([{x:46, y:42}]);
+				done();
+			});
+		});
+	});
+
+	it ('addSketch & getSketch of other', function(done) {
+		db.addSketch('abc', {x:46, y:42}, function(err, data) {
+			db.getSketch('xyz', function(err, result) {
+				expect(err).to.be(null);
+				expect(result).to.eql([]);
+				done();
+			});
+		});
+	});
+
+	it ('addSketch more & getSketch', function(done) {
+		db.addSketch('abc', {x:46, y:42}, function(err, data) {
+			db.addSketch('abc', {x:55, y:22}, function(err, data) {
+				db.getSketch('abc', function(err, result) {
+					expect(err).to.be(null);
+					expect(result).to.eql([{x:46, y:42}, {x:55,y:22}]);
+					done();
+				});
+			});
+		});
+	});
+
+
 });
 

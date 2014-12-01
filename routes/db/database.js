@@ -4,7 +4,7 @@ var crypto = require('crypto');
 
 var KEY_SESSION = 'ses:';
 var KEY_USER = 'usr:';
-var KEY_USER_ID = 'usrkey'
+var KEY_SKETCH = 'ske:';
 
 var Database = function() {
 
@@ -118,7 +118,41 @@ var Database = function() {
 	};
 
 
+	// -------------------------------------
 
+
+	var getSketchKey = function(userKey) {
+		return KEY_SKETCH + userKey;
+	}
+
+	this.addSketch = function(userKey, sketch, callback) {
+		// convert sketch-object to string
+		client.rpush(getSketchKey(userKey), JSON.stringify(sketch), function(err, result) {
+			if (err) {
+				callback(err, null);
+			}
+			else {
+				callback(null, sketch);
+			}
+		});
+	}
+
+	this.getSketch = function(userKey, callback) {
+		client.lrange(getSketchKey(userKey), 0, -1, function(err, result) {
+			if (err) {
+				callback(err, null);
+			}
+			else {
+				// result is a list of stringified objects
+				// convert it to a list of objects
+				var list = [];
+				result.forEach( function(r) {
+					list.push(JSON.parse(r));
+				})
+				callback(null, list);
+			}
+		});
+	}
 
 };
 

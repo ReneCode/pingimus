@@ -2,6 +2,16 @@
 var Picture = (function() {
 	var self = this;
 
+
+	var coordToClient = function(pt) {
+		var c = $('#cvp')[0];
+
+		return {
+			x: (pt.x * c.width / 1000),
+			y: (pt.y * c.height / 1000)
+		}
+	}
+
 	var drawRect = function(arr) {
 		var c = $('#cvp')[0];
 		var ctx = c.getContext('2d');
@@ -21,9 +31,44 @@ var Picture = (function() {
 			ctx.arc(arr[0],arr[1],arr[2],0,2*Math.PI);
 			ctx.stroke();
 		}
+	};
+
+	var clear = function() {
+		var c = $('#cvp')[0];
+		var ctx = c.getContext('2d');
+		ctx.clearRect(0,0,c.width,c.height);		
+	};
+
+	var _drawDot = function(pt) {
+		var c = $('#cvp')[0];
+		var ctx = c.getContext('2d');
+		var p = coordToClient(pt);
+		ctx.FillStyle = "#440044";
+		ctx.fillRect(p.x-2, p.y-2, 4, 4);
+	};
+
+	var _reload = function(para) {
+		clear();
+		para.forEach(function(p) {		
+			switch (p.cmd) {
+				case 'dot':
+					_drawDot(p);
+					break;
+			}
+		});
 	}
 
+
+
 	return {
+		drawDot: function(para) {
+			_drawDot(para);
+		},
+
+		reload: function(para) {
+			_reload(para);
+		},
+
 		receiveMessage: function(msg) {
 			var arr = msg.split(',');
 			var cmd = arr.shift();
