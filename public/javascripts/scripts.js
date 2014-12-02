@@ -1,6 +1,9 @@
 
 var userId = undefined;
 var paintMode = 'dot';  //
+var mouseDown = false;
+var points = [];
+var mouseDownTime = undefined;
 
 var getMousePosition = function(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
@@ -10,17 +13,59 @@ var getMousePosition = function(canvas, evt) {
   };
 }
 
+
+var switchMouseModeElapsed = function() {
+  if (mouseDown == true) {
+    paintMode = 'route';
+    var canvas = $('#cvp')[0];
+    canvas.css({'cursor': 'crosshair'});
+  }
+}
+
 var doMouseDown = function(event) {
+  event.target.style.cursor = 'pointer';
   var canvas = $('#cvp')[0];
   var pt = getMousePosition(canvas, event);
-//  console.log("x:%d y:%d", pt.x, pt.y);
+  console.log("down / x:%d y:%d", pt.x, pt.y);
+  points.push(pt);
+  mouseDown = true;
+  setTimeout( switchMouseModeElapsed, 200);
+}
+
+
+
+var doMouseMove = function(event) {
+
+  if (mouseDown) {
+    var canvas = $('#cvp')[0];
+    var pt = getMousePosition(canvas, event);
+    console.log("mouseMove / x:%d y:%d", pt.x, pt.y);
+
+    points.push(pt);
+  }
+}
+
+var doMouseUp = function(event) {
+  event.target.style.cursor = 'default';
+
+  mouseDown = false;
+  var canvas = $('#cvp')[0];
+  var pt = getMousePosition(canvas, event);
 
   switch (paintMode) {
     case 'dot':
-      sendCommandToServer('dot', pt);
+      sendCommandToServer('dot', points[0]);
+      break;
+
+    case 'route':
+      points.forEach( function(p) {
+        sendCommandToServer('dot', p);
+      });
       break;
 
   }
+  points = [];
+  paintMode = 'dot';
 }
 
 
@@ -37,6 +82,8 @@ $( function() {
   canvas.width = 400;
   canvas.height = 400;
   canvas.addEventListener('mousedown', doMouseDown, false);
+  canvas.addEventListener('mouseup', doMouseUp, false);
+  canvas.addEventListener('mousemove', doMouseMove, false);
 
 
   $("#reload").click(doReload);
