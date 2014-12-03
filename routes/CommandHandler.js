@@ -27,6 +27,13 @@ var CommandHandler = function (db) {
 				});
 				break;
 
+			case 'poly':
+				Sketch.addPolygon(database, userId, para, function(err, data) {
+					if (!err) {
+						res.send({cmd:cmd, para:data});
+					}
+				});
+				break
 			case 'reload':
 				console.log('reload');
 				Sketch.getAll(database, userId, function(err, data) {

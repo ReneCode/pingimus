@@ -16,9 +16,9 @@ var getMousePosition = function(canvas, evt) {
 
 var switchMouseModeElapsed = function() {
   if (mouseDown == true) {
-    paintMode = 'route';
+    paintMode = 'poly';
     var canvas = $('#cvp')[0];
-    canvas.css({'cursor': 'crosshair'});
+//    canvas.css({'cursor': 'crosshair'});
   }
 }
 
@@ -26,7 +26,7 @@ var doMouseDown = function(event) {
   event.target.style.cursor = 'pointer';
   var canvas = $('#cvp')[0];
   var pt = getMousePosition(canvas, event);
-  console.log("down / x:%d y:%d", pt.x, pt.y);
+//  console.log("down / x:%d y:%d", pt.x, pt.y);
   points.push(pt);
   mouseDown = true;
   setTimeout( switchMouseModeElapsed, 200);
@@ -39,7 +39,7 @@ var doMouseMove = function(event) {
   if (mouseDown) {
     var canvas = $('#cvp')[0];
     var pt = getMousePosition(canvas, event);
-    console.log("mouseMove / x:%d y:%d", pt.x, pt.y);
+//    console.log("mouseMove / x:%d y:%d", pt.x, pt.y);
 
     points.push(pt);
   }
@@ -57,10 +57,9 @@ var doMouseUp = function(event) {
       sendCommandToServer('dot', points[0]);
       break;
 
-    case 'route':
-      points.forEach( function(p) {
-        sendCommandToServer('dot', p);
-      });
+    case 'poly':
+      points = simplify(points, 2);
+      sendCommandToServer('poly', points);
       break;
 
   }
@@ -129,7 +128,11 @@ var sendCanvasCmd = function(pt) {
 var receiveDataFromServer = function(data) {
   switch (data.cmd) {
     case 'dot':
-      Picture.drawDot(data.para);
+      Picture.drawDot(data.para.point);
+      break;
+
+    case 'poly':
+      Picture.drawPolygon(data.para.points);
       break;
 
     case 'reload':

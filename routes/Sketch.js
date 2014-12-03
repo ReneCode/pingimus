@@ -15,6 +15,19 @@ var Sketch = (function() {
 
 	};
 
+
+
+	var validatePolygon = function(para) {
+		var points = [];
+		para.forEach(function(p) {
+			if (!validateDot(p)) {
+				return undefined;
+			}
+			points.push({x:p.x,y:p.y});
+		});
+		return points;
+	};
+
 	var getExpire = function() {
 		return moment().add(10, 'm').valueOf();
 	};
@@ -37,7 +50,7 @@ var Sketch = (function() {
 				callback("invalid parameter", null);
 			}
 			else {
-				var obj = {cmd:'dot', exp:getExpire(), x:para.x, y:para.y}
+				var obj = {cmd:'dot', exp:getExpire(), point: {x:para.x, y:para.y} };
 				database.addSketch(userId, obj, function(err, data) {
 					if (err) {
 						callback(err, null);
@@ -48,6 +61,26 @@ var Sketch = (function() {
 				});
 			}
 		},
+
+		addPolygon: function(database, userId, para, callback) {
+			var points = validatePolygon(para);
+			if (!points) {
+				callback("invalid parameter", null);
+			}
+			else {
+				var obj = {cmd:'poly', exp:getExpire(), points:points}
+				database.addSketch(userId, obj, function(err, data) {
+					if (err) {
+						callback(err, null);
+					}
+					else {
+						callback(null, obj);
+					}
+				});
+			}
+		},
+
+
 
 		getAll: function(database, userId, callback) {
 			_getAll(database, userId, callback);

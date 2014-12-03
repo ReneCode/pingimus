@@ -47,13 +47,36 @@ var Picture = (function() {
 		ctx.fillRect(p.x-2, p.y-2, 4, 4);
 	};
 
+	var _drawPolygon = function(para) {
+		var c = $('#cvp')[0];
+		var ctx = c.getContext('2d');
+		ctx.beginPath();
+		var pt = para.shift();
+		var p = coordToClient(pt);
+		ctx.moveTo(p.x, p.y);
+		para.forEach(function(pt) {
+			var p = coordToClient(pt);
+			ctx.lineTo(p.x, p.y);
+		});
+//		ctx.closePath();
+		ctx.FillStyle = "#440044";
+		ctx.stroke();
+//			ctx.fillRect(p.x-2, p.y-2, 4, 4);
+	};
+
+
 	var _reload = function(para) {
 		clear();
 		para.forEach(function(p) {		
 			switch (p.cmd) {
 				case 'dot':
-					_drawDot(p);
+					_drawDot(p.point);
 					break;
+					
+				case 'poly':
+					_drawPolygon(p.points);
+					break;
+
 			}
 		});
 	}
@@ -63,6 +86,10 @@ var Picture = (function() {
 	return {
 		drawDot: function(para) {
 			_drawDot(para);
+		},
+
+		drawPolygon: function(para) {
+			_drawPolygon(para);
 		},
 
 		reload: function(para) {
