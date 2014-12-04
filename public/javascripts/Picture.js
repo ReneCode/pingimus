@@ -59,6 +59,7 @@ var Picture = (function() {
 			ctx.lineTo(p.x, p.y);
 		});
 //		ctx.closePath();
+		ctx.lineWidth=4;
 		ctx.FillStyle = "#440044";
 		ctx.stroke();
 //			ctx.fillRect(p.x-2, p.y-2, 4, 4);
