@@ -4,6 +4,8 @@ var paintMode = 'dot';  //
 var mouseDown = false;
 var points = [];
 var mouseDownTime = undefined;
+var imageData = undefined;
+
 
 var getMousePosition = function(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
@@ -22,7 +24,23 @@ var switchMouseModeElapsed = function() {
   }
 }
 
+var saveImage = function() {
+  var canvas = $('#cvp')[0];
+  var ctx = canvas.getContext('2d');
+  imageData = ctx.getImageData(0,0,canvas.width, canvas.width);
+}
+
+
+
+var restoreImage = function() {
+  var canvas = $('#cvp')[0];
+  var ctx = canvas.getContext('2d');
+  ctx.putImageData(imageData, 0, 0);
+}
+
+
 var doMouseDown = function(event) {
+  saveImage();
   event.target.style.cursor = 'pointer';
   var canvas = $('#cvp')[0];
   var pt = getMousePosition(canvas, event);
@@ -35,10 +53,11 @@ var doMouseDown = function(event) {
 
 
 var doMouseMove = function(event) {
-
   if (mouseDown) {
     var canvas = $('#cvp')[0];
     var pt = getMousePosition(canvas, event);
+
+    Picture.drawDot(pt);
 //    console.log("mouseMove / x:%d y:%d", pt.x, pt.y);
 
     points.push(pt);
@@ -46,6 +65,8 @@ var doMouseMove = function(event) {
 }
 
 var doMouseUp = function(event) {
+  restoreImage();
+
   event.target.style.cursor = 'default';
 
   mouseDown = false;
