@@ -57,10 +57,15 @@ var doMouseMove = function(event) {
     var canvas = $('#cvp')[0];
     var pt = getMousePosition(canvas, event);
 
-    Picture.drawDot(pt);
 //    console.log("mouseMove / x:%d y:%d", pt.x, pt.y);
 
+    // echo drawing the last segment of the polygon
+    if (points.length > 0) {
+      Picture.drawPolygon([points[points.length-1], pt]);
+    }
+
     points.push(pt);
+
   }
 }
 

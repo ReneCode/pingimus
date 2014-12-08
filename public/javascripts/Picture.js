@@ -39,11 +39,12 @@ var Picture = (function() {
 		ctx.clearRect(0,0,c.width,c.height);		
 	};
 
-	var _drawDot = function(pt) {
+	var _drawDot = function(pt, width) {
 		var c = $('#cvp')[0];
 		var ctx = c.getContext('2d');
 		var p = coordToClient(pt);
 		ctx.FillStyle = "#440044";
+		var w = width | 4;
 		ctx.fillRect(p.x-2, p.y-2, 4, 4);
 	};
 
@@ -84,8 +85,8 @@ var Picture = (function() {
 
 
 	return {
-		drawDot: function(para) {
-			_drawDot(para);
+		drawDot: function(para, width) {
+			_drawDot(para, width);
 		},
 
 		drawPolygon: function(para) {
