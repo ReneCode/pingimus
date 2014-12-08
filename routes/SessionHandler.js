@@ -1,6 +1,6 @@
 
 //var Database = require('./db/database');
-var User = require('./user');
+var User = require('./User');
 var Sketch = require('./Sketch');
 
 var SessionHandler = function (db) {
@@ -133,6 +133,7 @@ var SessionHandler = function (db) {
 		});
 	};
 
+/*
 	this.handleCommand = function(req, res) {
 		var userId = req.session.userid;
 
@@ -150,6 +151,7 @@ var SessionHandler = function (db) {
 		res.send({cmd:cmd, result:true, para:para});
 
 	};
+	*/
 };
 
 

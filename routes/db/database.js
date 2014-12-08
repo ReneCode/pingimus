@@ -69,14 +69,13 @@ var Database = function() {
 				callback(null, result);
 			}
 		});
-	}
+	}; 
 
 
+	// =========================================================
 
-	/**
-		user has to have property "key". This is unique for all users
-	*/
-	this.addUser = function(user, callback) {
+
+	this.setUser = function(user, callback) {
 		// make string out of user-object
 		client.hset(KEY_USER, user.key, JSON.stringify(user), function(err, result) {
 			if (err) {
@@ -89,15 +88,26 @@ var Database = function() {
 	};
 	
 
+	/**
+		user has to have property "key". This is unique for all users
+	*/
+	this.addUser = function(user, callback) {
+		// todo: look if user allready exists
+
+		this.setUser(user, callback);
+	};
+
+
+
 	this.getUser = function(userKey, callback) {
 		client.hget(KEY_USER, userKey, function(err, user) {
-			// convert to object
-			user = JSON.parse(user);
 			if (err) {
 				callback(err, null);
 			}
 			else {
-				callback(null, user);
+				// convert to object
+				var oUser = JSON.parse(user);
+				callback(null, oUser);
 			}
 		});
 	};
@@ -118,12 +128,13 @@ var Database = function() {
 	};
 
 
+
 	// -------------------------------------
 
 
 	var getSketchKey = function(userKey) {
 		return KEY_SKETCH + userKey;
-	}
+	};
 
 	this.addSketch = function(userKey, sketch, callback) {
 		// convert sketch-object to string
@@ -135,7 +146,7 @@ var Database = function() {
 				callback(null, sketch);
 			}
 		});
-	}
+	};
 
 	this.getSketch = function(userKey, callback) {
 		client.lrange(getSketchKey(userKey), 0, -1, function(err, result) {

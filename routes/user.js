@@ -2,6 +2,7 @@
 
 var crypto = require('crypto');
 
+
 var User = function() {
 
 	var _create = function(userKey, clearPassword, callback) {
@@ -32,8 +33,49 @@ var User = function() {
 				}
 			}
 		});
-
 	}
+
+	/**
+		para = userKey of follower
+	*/
+	var _follow = function(database, userKey, para, callback) {
+		database.getUser(userKey, function(err, oUser) {
+			if (err) {
+				return callback(err, null);
+			}
+			else {
+				database.getUser(para, function(err, oFollower) {
+					if (err) {
+						return callback(err, null);
+					}
+					else {
+						if (!oFollower) {
+							return callback("can't find follower", null);
+						}
+						else {
+							if (!oUser.hasOwnProperty('follower')) {
+								oUser.follower = [oFollower.key];
+							} 
+							else {
+								if (oUser.follower.indexOf(oFollower.key) < 0) {
+									oUser.follower.push(oFollower.key);
+								}
+							} 
+							database.setUser(oUser, callback);
+						}
+					}
+				});
+			}
+		});
+	};
+
+	/**
+		callback(err, userKeysWhoFollowsMe)
+	*/
+	var _whoFollowsMe = function(database, userKey, callback) {
+		database.whoFollowsMe(userKey, callback);
+	}
+
 
 
 	return {
@@ -52,6 +94,14 @@ var User = function() {
 		*/
 		validatePassword: function(user, clearPassword, callback) {
 			return _validatePassword(user, clearPassword, callback);
+		},
+
+		follow: function(database, userKey, para, callback) {
+			return _follow(database, userKey, para, callback);
+		},
+
+		whoFollowsMe: function(database, userKey, callback) {
+			return _whoFollowsMe(database, userKey, callback);
 		}
 	}
 }();

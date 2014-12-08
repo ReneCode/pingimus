@@ -26,6 +26,6 @@ describe('user', function() {
 		});
 	});
 
-
 });
+
 

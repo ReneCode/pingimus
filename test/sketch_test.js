@@ -20,8 +20,8 @@ describe('sketch dot', function() {
 
 		Sketch.addDot(database, 'abc', {x:55, y:44}, function(err, data) {
 			expect(err).to.be(null);
-			expect(data.x).to.eql(55);
-			expect(data.y).to.eql(44);
+			expect(data.point.x).to.eql(55);
+			expect(data.point.y).to.eql(44);
 			expect(data.expire).to.exist;
 			done();
 		});
@@ -32,8 +32,8 @@ describe('sketch dot', function() {
 		Sketch.addDot(database, 'abc', {x:55, y:44}, function(err, d) {
 			Sketch.getAll(database, 'abc', function(err, data) {
 				expect(err).to.be(null);
-				expect(data[0].x).to.eql(55);
-				expect(data[0].y).to.eql(44);
+				expect(data[0].point.x).to.eql(55);
+				expect(data[0].point.y).to.eql(44);
 				expect(data[0].cmd).to.eql('dot');
 				expect(data[0].expire).to.exist;
 				done();
@@ -48,8 +48,8 @@ describe('sketch dot', function() {
 					Sketch.getAll(database, 'abc', function(err, data) {
 						expect(err).to.be(null);
 						expect(data.length).to.be(3);
-						expect(data[0].x).to.be(22);
-						expect(data[1].y).to.be(33);
+						expect(data[0].point.x).to.be(22);
+						expect(data[1].point.y).to.be(33);
 						expect(data[2].cmd).to.be('dot');
 						expect(data[1].expire).to.exist;
 						done();

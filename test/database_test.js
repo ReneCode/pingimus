@@ -1,5 +1,6 @@
 var expect = require ('expect.js');
 var Database = require('../routes/db/Database.js');
+var User = require('../routes/User.js');
 
 describe('Database init', function() {
 	it ('init', function() {
@@ -18,7 +19,7 @@ describe('Database init', function() {
 });
 
 
-describe('Database connect', function() {
+describe('Database session', function() {
  	var db = new Database();
 
 	beforeEach( function(done) {
@@ -89,7 +90,19 @@ describe('Database connect', function() {
 			});
 		});
 	});
+});
 
+
+
+describe('Database user', function() {
+ 	var db = new Database();
+
+	beforeEach( function(done) {
+		db.connect( function(err){
+			db.clearDb();
+			done();
+		});
+	});
 
 	it ('addUser', function(done) {
 		db.addUser({key:"abc", age:47}, function(err, user){
@@ -136,6 +149,23 @@ describe('Database connect', function() {
 	});
 
 
+	it ('getUser, not existent user', function(done) {
+		db.addUser({key:"abc", age:47}, function(err, user){
+			expect(err).to.be(null);
+			expect(user.key).to.be("abc");
+			expect(user.age).to.be(47);
+
+			db.getUser("xyz", function(err, u1) {
+				expect(err).to.be(null);
+				expect(u1).to.be(null);
+				done();
+			});
+		});
+	});
+
+
+
+
 	it ('existsUser', function(done) {
 		db.addUser({key:"abc", age:47}, function(err, user){
 			expect(err).to.be(null);
@@ -163,6 +193,71 @@ describe('Database connect', function() {
 		});
 	});
 
+
+
+	it ('addFollower', function(done) {
+		db.addUser({key:"ab", age:44}, function(err, uAb){
+			db.addUser({key:"xy", age:22}, function(err, uXy){
+				db.addUser({key:"zz", age:33}, function(err, uZz){
+					User.follow(db, uAb.key, uXy.key, function(err, user) {
+						User.follow(db, uAb.key, uZz.key, function(err, user) {
+							expect(err).to.be(null);
+							expect(user.key).to.be("ab");
+							expect(user.age).to.be(44);
+							expect(user.follower).to.eql(["xy","zz"]);
+							done();
+						});
+					});
+				});
+			});
+		});
+	});
+
+
+	it ('addFollower catch duplicate', function(done) {
+		db.addUser({key:"ab", age:44}, function(err, uAb){
+			db.addUser({key:"xy", age:22}, function(err, uXy){
+				User.follow(db, uAb.key, uXy.key, function(err, user) {
+					User.follow(db, uAb.key, uXy.key, function(err, user) {
+						expect(err).to.be(null);
+						expect(user.key).to.be("ab");
+						expect(user.age).to.be(44);
+						expect(user.follower).to.eql(["xy"]);
+						done();
+					});
+				});
+			});
+		});
+	});
+
+
+
+	it ('addFollower # not existing follower', function(done) {
+		db.addUser({key:"ab", age:44}, function(err, uAb){
+			db.addUser({key:"xy", age:22}, function(err, uXy){
+				User.follow(db, uAb.key, 'abcd', function(err, user) {
+					expect(err).to.be("can't find follower");
+					expect(user).to.be(null);
+					done();
+				});
+			});
+		});
+	});
+
+
+});
+
+
+
+describe('Database sketch', function() {
+ 	var db = new Database();
+
+	beforeEach( function(done) {
+		db.connect( function(err){
+			db.clearDb();
+			done();
+		});
+	});
 
 
 	it ('addSketch', function(done) {
