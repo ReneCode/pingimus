@@ -84,8 +84,13 @@ var doMouseUp = function(event) {
       break;
 
     case 'poly':
-      points = simplify(points, 2);
-      sendCommandToServer('poly', points);
+      points = simplify(points, 1);
+      if (points.length == 1) {
+        sendCommandToServer('dot', points[0]);
+      }
+      else {
+        sendCommandToServer('poly', points);
+      }
       break;
 
   }
