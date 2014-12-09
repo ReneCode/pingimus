@@ -112,19 +112,12 @@ var Canvas = function(c) {
 		canvas.addEventListener('mousedown', doMouseDown, false);
 		canvas.addEventListener('mouseup', doMouseUp, false);
 		canvas.addEventListener('mousemove', doMouseMove, false);
-
 	};
-
-
 
 	this.doReload = function(event) {
 	  sendCommandToServer('reload', "");
 	  return false;
 	}
-
-
-
-
 
 };
 

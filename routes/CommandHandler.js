@@ -1,5 +1,6 @@
 var Sketch = require('./Sketch.js');
 var User = require('./User.js');
+var ServerTime = require('./ServerTime.js');
 
 var CommandHandler = function (db) {
 
@@ -36,7 +37,9 @@ var CommandHandler = function (db) {
 			case 'reload':
 				Sketch.getAll(database, userId, function(err, data) {
 					if (!err) {
-						res.send({cmd:cmd, para:data});
+						res.send({cmd:cmd, 
+								stime:ServerTime.getCurrentTime(),
+								para:data});
 					}
 				});
 				break;

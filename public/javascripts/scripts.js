@@ -26,6 +26,7 @@ $( function() {
 
 */
   $("#reload").click( canvas.doReload );
+  $("#refresh").click( Picture.refresh );
 
   $('form').submit(sendUserCommand);
 });
@@ -57,7 +58,7 @@ var receiveDataFromServer = function(data) {
       break;
 
     case 'reload':
-      Picture.reload(data.para);
+      Picture.reload(data);
       break;
 
     case 'login':

@@ -1,5 +1,4 @@
-var moment = require('moment');
-
+var ServerTime = require('./ServerTime.js')
 
 var Sketch = (function() {
 
@@ -28,11 +27,6 @@ var Sketch = (function() {
 		return points;
 	};
 
-	var getExpire = function() {
-		return moment().add(10, 'm').valueOf();
-	};
-
-
 	var _getAll = function(database,  userId, callback) {
 		database.getSketch(userId, function(err, data) {
 			if (err) {
@@ -50,7 +44,10 @@ var Sketch = (function() {
 				callback("invalid parameter", null);
 			}
 			else {
-				var obj = {cmd:'dot', exp:getExpire(), point: {x:para.x, y:para.y} };
+				var obj = {cmd:'dot', 
+							create:ServerTime.getCurrentTime(),
+							expire:ServerTime.getExpireTime(), 
+							point: {x:para.x, y:para.y} };
 				database.addSketch(userId, obj, function(err, data) {
 					if (err) {
 						callback(err, null);
@@ -68,7 +65,10 @@ var Sketch = (function() {
 				callback("invalid parameter", null);
 			}
 			else {
-				var obj = {cmd:'poly', exp:getExpire(), points:points}
+				var obj = {cmd:'poly', 
+							create:ServerTime.getCurrentTime(),
+							expire:ServerTime.getExpireTime(), 
+							points:points}
 				database.addSketch(userId, obj, function(err, data) {
 					if (err) {
 						callback(err, null);

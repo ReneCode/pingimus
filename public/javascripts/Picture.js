@@ -1,7 +1,7 @@
 
 var Picture = (function() {
-	var self = this;
 
+	var cmdList = undefined;
 
 	var coordToClient = function(pt) {
 		var c = $('#cvp')[0];
@@ -49,15 +49,22 @@ var Picture = (function() {
 	};
 
 	var _drawPolygon = function(para) {
+		if (!para  ||  para.length < 2) {
+			return;
+		}
 		var c = $('#cvp')[0];
 		var ctx = c.getContext('2d');
 		ctx.beginPath();
-		var pt = para.shift();
-		var p = coordToClient(pt);
-		ctx.moveTo(p.x, p.y);
+		var first = true;
 		para.forEach(function(pt) {
 			var p = coordToClient(pt);
-			ctx.lineTo(p.x, p.y);
+			if (first) {
+				ctx.moveTo(p.x, p.y);
+				first = false;
+			} 
+			else {
+				ctx.lineTo(p.x, p.y);
+			} 
 		});
 //		ctx.closePath();
 		ctx.lineWidth=4;
@@ -67,9 +74,12 @@ var Picture = (function() {
 	};
 
 
-	var _reload = function(para) {
+	var redraw = function() {
+		if (!cmdList) {
+			return;
+		}
 		clear();
-		para.forEach(function(p) {		
+		cmdList.forEach(function(p) {		
 			switch (p.cmd) {
 				case 'dot':
 					_drawDot(p.point);
@@ -84,6 +94,31 @@ var Picture = (function() {
 	}
 
 
+	var _reload = function(data) {
+		cmdList = data.para;
+		redraw();
+	}
+
+	var _refresh = function() {
+		updateCmdList()
+		redraw();
+	}
+
+	var updateCmdList = function() {
+		if (!cmdList) {
+			return;
+		}
+		var now = new Date().valueOf();
+		// take only the valid cmd
+		cmdList = cmdList.filter( function(c) {
+			if (c.create <= now  &&  c.expire > now) {
+				return true;
+			}
+			return false;
+		});
+	}
+
+	setInterval(_refresh, 2*1000);
 
 	return {
 		drawDot: function(para, width) {
@@ -94,8 +129,12 @@ var Picture = (function() {
 			_drawPolygon(para);
 		},
 
-		reload: function(para) {
-			_reload(para);
+		reload: function(data) {
+			_reload(data);
+		},
+
+		refresh: function() {
+			_refresh();
 		},
 
 		receiveMessage: function(msg) {
@@ -113,3 +152,4 @@ var Picture = (function() {
 		}
 	};
 })();
+
