@@ -13,6 +13,7 @@ $( function() {
   canvas = new Canvas(cv);
   canvas.init(sendCommandToServer);
 
+
 /*
   var is_touch_device = 'ontouchstart' in document.documentElement;
  
@@ -49,12 +50,19 @@ var sendUserCommand = function() {
 
 var receiveDataFromServer = function(data) {
   switch (data.cmd) {
+/*
     case 'dot':
       Picture.drawDot(data.para.point);
       break;
 
     case 'poly':
       Picture.drawPolygon(data.para.points);
+      break;
+*/
+
+    case 'dot':
+    case 'poly':
+      Picture.add(data);
       break;
 
     case 'reload':

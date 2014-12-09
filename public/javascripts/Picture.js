@@ -73,22 +73,34 @@ var Picture = (function() {
 //			ctx.fillRect(p.x-2, p.y-2, 4, 4);
 	};
 
+	var _add = function(data) {
+		if (!cmdList) {
+			cmdList = [];
+		}
+		cmdList.push(data.para);
+		drawCmd(data.para);
+	}
 
-	var redraw = function() {
+	var drawCmd = function(cmd) {
+		switch (cmd.cmd) {
+			case 'dot':
+				_drawDot(cmd.point);
+				break;
+				
+			case 'poly':
+				_drawPolygon(cmd.points);
+				break;
+		}
+	}
+
+	var redraw = function(now) {
 		if (!cmdList) {
 			return;
 		}
 		clear();
-		cmdList.forEach(function(p) {		
-			switch (p.cmd) {
-				case 'dot':
-					_drawDot(p.point);
-					break;
-					
-				case 'poly':
-					_drawPolygon(p.points);
-					break;
-
+		cmdList.forEach(function(cmd) {	
+			if (cmd.create <= now) {
+				drawCmd(cmd);
 			}
 		});
 	}
@@ -99,28 +111,39 @@ var Picture = (function() {
 		redraw();
 	}
 
-	var _refresh = function() {
-		updateCmdList()
-		redraw();
+	var getTimeNow = function() {
+		var now = new Date().valueOf();
+		now = now - 10*1000;
+		return now;	
 	}
 
-	var updateCmdList = function() {
+	var _refresh = function() {
+		var now = getTimeNow();
+		updateCmdList(now);
+		redraw(now);
+	}
+
+	var updateCmdList = function(now) {
 		if (!cmdList) {
 			return;
 		}
-		var now = new Date().valueOf();
-		// take only the valid cmd
+
+		// remove expired elements
 		cmdList = cmdList.filter( function(c) {
-			if (c.create <= now  &&  c.expire > now) {
-				return true;
+			if (c.expire <= now) {
+				return false;
 			}
-			return false;
+			return true;
 		});
 	}
 
-	setInterval(_refresh, 2*1000);
+	setInterval(_refresh, 1*1000);
 
 	return {
+		add: function(data) {
+			_add(data);
+		},
+
 		drawDot: function(para, width) {
 			_drawDot(para, width);
 		},
