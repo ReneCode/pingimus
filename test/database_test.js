@@ -245,6 +245,32 @@ describe('Database user', function() {
 	});
 
 
+	it ('addFollower # whoIsFollowingMe', function(done) {
+		db.addUser({key:"aa", age:44}, function(err, uA){
+			db.addUser({key:"bb", age:22}, function(err, uB){
+				db.addUser({key:"cc", age:33}, function(err, uC){
+					User.follow(db, uA.key, uB.key, function(err, user) {
+						User.follow(db, uA.key, uC.key, function(err, user) {
+							db.getUser(uA.key, function(err, userA) {
+								expect(err).to.be(null);
+								expect(userA.key).to.be("aa");
+								expect(userA.follower).to.eql(["bb", "cc"]);
+								db.getUser(uB.key, function(err, userB) {
+									console.log(userB);
+									expect(err).to.be(null);
+									expect(userB.key).to.be("bb");
+									expect(userB.whoIsFollowingMe).to.eql(["aa"]);
+									done();
+								});
+							});
+						});	
+					});
+				});
+			});
+		});
+	});
+
+
 });
 
 

@@ -35,9 +35,43 @@ var User = function() {
 		});
 	}
 
+
+	/**
+		user.key = 4711		// identification
+		user.name = "paul"
+		user.follower = [22,44]		// user is following user #22 and #44
+		user.isFollowingMe = [77]	// user #77 follows paul
+
+		A.follower = [B,C]
+		B.whoIsFollowingMe = [A]
+		C.whoIsFollowingMe = [A]
+	*/
+	var setFollower = function(oUser, oFollower)
+	{
+		// update  user.follower
+		if (!oUser.hasOwnProperty('follower')) {
+			oUser.follower = [oFollower.key];
+		} 
+		else {
+			if (oUser.follower.indexOf(oFollower.key) < 0) {
+				oUser.follower.push(oFollower.key);
+			}
+		} 
+
+		// update  oFollower.isFolledBy
+		if (!oFollower.hasOwnProperty('whoIsFollowingMe')) {
+			oFollower.whoIsFollowingMe = [oUser.key];
+		}
+		else {
+			// append to the array
+			oFollower.whoIsFollowingMe.push(oUser.key);
+		}
+	}
+
 	/**
 		para = userKey of follower
 	*/
+
 	var _follow = function(database, userKey, para, callback) {
 		database.getUser(userKey, function(err, oUser) {
 			if (err) {
@@ -53,15 +87,15 @@ var User = function() {
 							return callback("can't find follower", null);
 						}
 						else {
-							if (!oUser.hasOwnProperty('follower')) {
-								oUser.follower = [oFollower.key];
-							} 
-							else {
-								if (oUser.follower.indexOf(oFollower.key) < 0) {
-									oUser.follower.push(oFollower.key);
+							setFollower(oUser, oFollower);
+							// save both:  user and follower
+							database.setUser(oUser, function(err, data) {
+								if (!err) {
+									database.setUser(oFollower, function(err, data) {
+										return callback(null, oUser);
+									});
 								}
-							} 
-							database.setUser(oUser, callback);
+							})
 						}
 					}
 				});
@@ -72,8 +106,15 @@ var User = function() {
 	/**
 		callback(err, userKeysWhoFollowsMe)
 	*/
-	var _whoFollowsMe = function(database, userKey, callback) {
-		database.whoFollowsMe(userKey, callback);
+	var _whoIsFollowingMe = function(database, userKey, callback) {
+		database.getUser(userKey, function(err, oUser) {
+			if (err) {
+				return callback(err, null);
+			}
+			else {
+				return callback(null, oUser.whoIsFollowingMe);
+			}
+		});
 	}
 
 
@@ -100,8 +141,8 @@ var User = function() {
 			return _follow(database, userKey, para, callback);
 		},
 
-		whoFollowsMe: function(database, userKey, callback) {
-			return _whoFollowsMe(database, userKey, callback);
+		whoIsFollowingMe: function(database, userKey, callback) {
+			return _whoIsFollowingMe(database, userKey, callback);
 		}
 	}
 }();

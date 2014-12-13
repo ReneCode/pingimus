@@ -1,4 +1,6 @@
 var ServerTime = require('./ServerTime.js')
+var async = require('async');
+
 
 var Sketch = (function() {
 
@@ -28,13 +30,26 @@ var Sketch = (function() {
 	};
 
 	var _getAll = function(database,  userId, callback) {
-		database.getSketch(userId, function(err, data) {
-			if (err) {
-				callback(err, null);
+		User.whoIsFollowingMe(userId, function(err, otherUser) {
+			async.map(otherUser, function(a,b,c) {
+
+			}, 
+			function(err, result) {
+
+			});
+/*
+			if (!err) {
+				database.getSketch(otherUser, function(err, data) {
+					if (err) {
+						callback(err, null);
+					}
+					else {
+						callback(null, data);
+					}
+				});
+
 			}
-			else {
-				callback(null, data);
-			}
+			*/
 		});
 	}
 

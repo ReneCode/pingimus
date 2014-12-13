@@ -2,6 +2,7 @@
 var Picture = (function() {
 
 	var cmdList = undefined;
+	var refreshInterval = undefined;
 
 	var coordToClient = function(pt) {
 		var c = $('#cvp')[0];
@@ -137,7 +138,7 @@ var Picture = (function() {
 		});
 	}
 
-	setInterval(_refresh, 1*1000);
+	refreshInterval = setInterval(_refresh, 1*1000);
 
 	return {
 		add: function(data) {
