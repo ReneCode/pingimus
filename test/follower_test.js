@@ -3,8 +3,8 @@ var expect = require ('expect.js');
 var Follower = require('../follow.js'); 
 
 
-describe('testing Follower whomDoIFollow', function() {
-	it ('add follwer', function() {
+describe('Follower', function() {
+	it ('Follower#whomDoIFollow', function() {
 		Follower.clear();
 		Follower.follow('a', 'b');
 		Follower.follow('a', 'c');
@@ -12,7 +12,7 @@ describe('testing Follower whomDoIFollow', function() {
 		expect(Follower.whomDoIFollow('a')).to.eql(['b', 'c', 'd']);
 	});
 
-	it ('add two follwer', function() {
+	it ('add two follower', function() {
 		Follower.clear();
 		Follower.follow('a', 'b');
 		Follower.follow('a', 'c');
@@ -45,7 +45,7 @@ describe('testing Follower whomDoIFollow', function() {
 
 });
 
-describe('testing Follower whoIsFollowingMe', function() {
+describe('Follower 2', function() {
 	it ('normal', function() {
 		Follower.clear();
 		Follower.follow('a', 'b');

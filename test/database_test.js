@@ -256,7 +256,6 @@ describe('Database user', function() {
 								expect(userA.key).to.be("aa");
 								expect(userA.follower).to.eql(["bb", "cc"]);
 								db.getUser(uB.key, function(err, userB) {
-									console.log(userB);
 									expect(err).to.be(null);
 									expect(userB.key).to.be("bb");
 									expect(userB.whoIsFollowingMe).to.eql(["aa"]);

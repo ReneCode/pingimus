@@ -3,8 +3,8 @@ var expect = require ('expect.js');
 var crypto = require('crypto');
 
 
-describe('crypt init', function() {
-	it ('init', function(done) {
+describe('crypt', function() {
+	it ('crypt#pdkdf2', function(done) {
 
 		var pw = "abc";
 		var hashes = crypto.getHashes();
