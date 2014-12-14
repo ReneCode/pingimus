@@ -1,6 +1,8 @@
 
 
 var canvas = undefined;
+var clientBuffer = undefined;
+
 
 
 $( function() {
@@ -10,8 +12,12 @@ $( function() {
   cv.width = 400;
   cv.height = 200;
 
+  clientBuffer = new ClientBuffer(sendCommandToServer);
+
   canvas = new Canvas(cv);
-  canvas.init(sendCommandToServer);
+  canvas.init(sendCommand);
+
+
 
 
 /*
@@ -31,9 +37,17 @@ $( function() {
 
   $('form').submit(sendUserCommand);
 
-  var reloadInterval = setInterval(canvas.doReload, 10*1000);
+//  var reloadInterval = setInterval(doReload, 10*1000);
 });
 
+
+/**
+  called every 10 seconds
+*/
+var doReload = function() {
+  canvas.doReload();
+
+}
 
 
 var sendUserCommand = function() {
@@ -90,7 +104,25 @@ var receiveDataFromServer = function(data) {
   }
 }
 
+/**
+*/
+var sendCommand = function(data) {
+  clientBuffer.add(data);
+  clientBuffer.tryToSendToServer( function(err, data) {
+    if (data) {
+      data.forEach(function(c) {
+        Picture.add(c);
+      })
+
+    }
+  });
+
+
+}
+
 var sendCommandToServer = function(cmd, para) {
+
+
   var data = {
         cmd: cmd,
         para: JSON.stringify(para)

@@ -76,8 +76,8 @@ var Picture = (function() {
 		if (!cmdList) {
 			cmdList = [];
 		}
-		cmdList.push(data.para);
-		drawCmd(data.para);
+		cmdList.push(data);
+		drawCmd(data);
 	}
 
 	var drawCmd = function(cmd) {

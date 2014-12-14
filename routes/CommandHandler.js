@@ -12,12 +12,21 @@ var CommandHandler = function (db) {
 
 		var cmd = req.body.cmd;
 		var para = JSON.parse(req.body.para);
-/*
-		console.dir(cmd);
-		console.dir(para);
-*/
 
 		switch (cmd) {
+
+			case 'cmdlist':
+				var create = undefined;
+				var expire = undefined;
+				para.forEach(function(c) {
+
+					console.dir(c);
+				});
+				res.send({cmd:cmd, para:{expire:ServerTime.getExpireTime(), 
+										create:ServerTime.getCurrentTime()}});
+
+				break;
+
 			case 'dot':
 				Sketch.addDot(database, userId, para, function(err, data) {
 					if (!err) {
