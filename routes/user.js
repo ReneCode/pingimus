@@ -64,20 +64,25 @@ var User = function() {
 		}
 		else {
 			// append to the array
-			oFollower.whoIsFollowingMe.push(oUser.key);
+			if (oFollower.whoIsFollowingMe.indexOf(oUser.key) < 0) {
+				oFollower.whoIsFollowingMe.push(oUser.key);
+			}
 		}
 	}
 
 	/**
 		para = userKey of follower
 	*/
-
 	var _follow = function(database, userKey, para, callback) {
 		database.getUser(userKey, function(err, oUser) {
 			if (err) {
 				return callback(err, null);
 			}
 			else {
+				if (userKey == para) {
+					return callback(new Error("can't follow yourself", null), null);
+				}
+				
 				database.getUser(para, function(err, oFollower) {
 					if (err) {
 						return callback(err, null);

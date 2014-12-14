@@ -112,7 +112,7 @@ var Picture = (function() {
 
 	var getTimeNow = function() {
 		var now = new Date().valueOf();
-		now = now - 10*1000;
+		now = now; //  - 10*1000;
 		return now;	
 	}
 

@@ -2,19 +2,15 @@ extends layout
 
 block content
 	nav.navbar.navbar-default(role="navigation")
-		div.container-fluid
-			div.navbar-header
-				a.navbar-brand(href="#") Pingimus
-			div.collapse.navbar-collapse
-				p.navbar-text 
-					a#reload(href="#") reload
-				p.navbar-text 
-					a#refresh(href="#") refresh
-				p.navbar-text#username #{username}
-				p.navbar-text#follower /follower
-				p.navbar-text#status /status
-				p.navtopright
-					a(href="/logout") Logout
+		div.navbar-header
+			a.navbar-brand(href="#") Pingiamus
+		div.collapse.navbar-collapse
+			p.navbar-text 
+				a#reload(href="#") reload
+			p.navbar-text#username #{username}
+			p.navbar-text#follower #{follower}
+			p.navbar-text
+				a(href="/logout") Logout
 
 	div.main
 		div.canvas

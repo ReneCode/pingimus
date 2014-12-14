@@ -16,7 +16,7 @@ var SessionHandler = function (db) {
 		}
 
 		var sessionId = req.cookies.session;
-		console.log("session:%s", sessionId);
+//		console.log("session:%s", sessionId);
 		if (!sessionId) {
 			res.redirect('/login');
 		}
@@ -127,7 +127,11 @@ var SessionHandler = function (db) {
 		var userId = req.session.userid;
 		database.getUser(userId, function(err, user) {
 			if (!err) {
-				res.render('index', {username:user.key});
+				var allFollower = "";
+				if (user.follower) {
+					allFollower = user.follower.join(',');
+				}
+				res.render('index', {username:user.key, follower:allFollower});
 
 			}
 		});

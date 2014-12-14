@@ -35,24 +35,35 @@ var CommandHandler = function (db) {
 				break;
 
 			case 'reload':
-				Sketch.getAll(database, userId, function(err, data) {
+				Sketch.getFromMyFollower(database, userId, function(err, data) {
 					if (!err) {
-						res.send({cmd:cmd, 
-								stime:ServerTime.getCurrentTime(),
-								para:data});
+						Sketch.getFromMe(database, userId, function(err, myData) {
+							if (!err) {
+								if (!data) {
+									data = myData;
+								}
+								else {
+									data = data.concat(myData);
+								}
+							}
+
+//							console.dir(data);
+							res.send({cmd:cmd, 
+									stime:ServerTime.getCurrentTime(),
+									para:data});
+
+						});
 					}
 				});
 				break;
 
 			case 'follow':
 				User.follow(database, userId, para, function(err, user) {
-					console.dir(para);
 					if (!err  &&  user) {
+						console.log("%s follows %s", userId, user.follower)
 						res.send({cmd:cmd, para:user.follower});
 					}
 				});
-
-
 				break;
 
 

@@ -8,7 +8,7 @@ $( function() {
   var cv = $('#cvp')[0];
   $('#cvp').css('background-color', 'rgba(158, 167, 184, 0.2)');
   cv.width = 400;
-  cv.height = 400;
+  cv.height = 200;
 
   canvas = new Canvas(cv);
   canvas.init(sendCommandToServer);
@@ -30,6 +30,8 @@ $( function() {
   $("#refresh").click( Picture.refresh );
 
   $('form').submit(sendUserCommand);
+
+  var reloadInterval = setInterval(canvas.doReload, 10*1000);
 });
 
 
@@ -85,17 +87,6 @@ var receiveDataFromServer = function(data) {
       }
       break;
 
-    case 'getfollower':
-      if (data.result == true) {
-        var follower = data.follower;
-        if (follower) {
-          $('#follower').html(follower.join(','));
-        }
-        else {
-          $('#follower').html('');
-        }
-
-      }
   }
 }
 
