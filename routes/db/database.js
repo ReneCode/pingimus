@@ -15,9 +15,17 @@ var Database = function() {
 
 		console.dir(process.env.REDISTOGO_URL);
 
-		if (process.env.REDISTOGO_URL) {
-			var rtg   = require("url").parse(process.env.REDISTOGO_URL);
+
+
+		var s = "redis://redistogo:88944017f79beed1627039f4112fdcc7@jack.redistogo.com:11254/";
+
+		s = process.env.REDISTOGO_URL;
+		if (s) {
+//		if (process.env.REDISTOGO_URL) {
+//			var rtg   = require("url").parse(process.env.REDISTOGO_URL);
+			var rtg   = require("url").parse(s);
 			client = redis.createClient(rtg.port, rtg.hostname);
+console.log(rtg.auth);
 			client.auth(rtg.auth.split(":")[1]);
 		}
 		else {

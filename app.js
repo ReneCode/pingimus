@@ -22,6 +22,8 @@ if (app.get('env') == 'development') {
 	app.use(express.errorHandler());
 }
 
+console.log("try connecting to redis database...");
+
 var database = new Database();
 database.connect( function(err) {
 	// route requests
