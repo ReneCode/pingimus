@@ -29,7 +29,7 @@ database.connect( function(err) {
 	// route requests
 	routes(app, database);
 
-	var port = 8080;
+	var port = process.env.PORT || 8080;
 	app.listen(port, function() {
 		console.log('listening on %d', port);
 	});
