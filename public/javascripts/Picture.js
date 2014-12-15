@@ -72,13 +72,6 @@ var Picture = (function() {
 		ctx.stroke();
 	};
 
-	var _add = function(data) {
-		if (!cmdList) {
-			cmdList = [];
-		}
-		cmdList.push(data);
-		drawCmd(data);
-	}
 
 	var drawCmd = function(cmd) {
 		switch (cmd.cmd) {
@@ -92,23 +85,32 @@ var Picture = (function() {
 		}
 	}
 
-	var redraw = function(now) {
+	var _redraw = function(now) {
 		if (!cmdList) {
 			return;
 		}
 		clear();
 		cmdList.forEach(function(cmd) {	
-			if (cmd.create <= now) {
+			if (!cmd.create  ||  cmd.create <= now) {
 				drawCmd(cmd);
 			}
 		});
 	}
 
 
-	var _reload = function(data) {
-		cmdList = data.para;
-		redraw();
+	var _clearCmdList = function() {
+		cmdList = undefined;
 	}
+
+	var _addCmdList = function(data) {
+		if (!cmdList) {
+			cmdList = data;
+		}
+		else {
+			cmdList = cmdList.concat(data);
+		}
+	}
+
 
 	var getTimeNow = function() {
 		var now = new Date().valueOf();
@@ -119,7 +121,7 @@ var Picture = (function() {
 	var _refresh = function() {
 		var now = getTimeNow();
 		updateCmdList(now);
-		redraw(now);
+		_redraw(now);
 	}
 
 	var updateCmdList = function(now) {
@@ -139,8 +141,17 @@ var Picture = (function() {
 	refreshInterval = setInterval(_refresh, 1*1000);
 
 	return {
-		add: function(data) {
-			_add(data);
+
+		clearCmdList: function() {
+			_clearCmdList();
+		},
+
+		addCmdList: function(data) {
+			_addCmdList(data);
+		},
+
+		redraw: function() {
+			_redraw();
 		},
 
 		drawDot: function(para, width) {

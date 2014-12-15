@@ -1,11 +1,10 @@
 var Sketch = require('./Sketch.js');
 var User = require('./User.js');
 var ServerTime = require('./ServerTime.js');
+var async = require('async');
 
 var CommandHandler = function (db) {
-
 	var database = db;
-
 
 	this.handleCommand = function(req, res) {
 		var userId = req.session.userid;
@@ -16,15 +15,30 @@ var CommandHandler = function (db) {
 		switch (cmd) {
 
 			case 'cmdlist':
-				var create = undefined;
-				var expire = undefined;
-				para.forEach(function(c) {
+				var create = ServerTime.getCurrentTime();
+				var expire = ServerTime.getExpireTime();
 
-					console.dir(c);
-				});
-				res.send({cmd:cmd, para:{expire:ServerTime.getExpireTime(), 
-										create:ServerTime.getCurrentTime()}});
-
+				async.map(para,
+					// function for each element
+					function(oneCmd, doneCb, c) {
+						switch (oneCmd.cmd) {
+							case 'dot':
+								Sketch.addDot(database, userId, oneCmd, function(err, data) {
+									doneCb(null);
+								});
+								break;
+							case 'poly':
+								Sketch.addPolygon(database, userId, oneCmd, function(err, data) {
+									doneCb(null);
+								});
+								break;
+						}
+					},
+					// final function
+					function(err, r) {
+						res.send({cmd:cmd, para:{expire:expire, create:create}});
+					}
+				);
 				break;
 
 			case 'dot':
@@ -46,22 +60,10 @@ var CommandHandler = function (db) {
 			case 'reload':
 				Sketch.getFromMyFollower(database, userId, function(err, data) {
 					if (!err) {
-						Sketch.getFromMe(database, userId, function(err, myData) {
-							if (!err) {
-								if (!data) {
-									data = myData;
-								}
-								else {
-									data = data.concat(myData);
-								}
-							}
-
-//							console.dir(data);
-							res.send({cmd:cmd, 
-									stime:ServerTime.getCurrentTime(),
-									para:data});
-
-						});
+						console.log("reload:%d", data.length);
+						res.send({cmd:cmd, 
+							servertime:ServerTime.getCurrentTime(),
+							para:data});
 					}
 				});
 				break;

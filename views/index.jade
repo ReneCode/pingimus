@@ -3,10 +3,12 @@ extends layout
 block content
 	nav.navbar.navbar-default(role="navigation")
 		div.navbar-header
-			a.navbar-brand(href="#") Pingiamus
+			a.navbar-brand(href="#") Pingamus
 		div.collapse.navbar-collapse
 			p.navbar-text 
 				a#reload(href="#") reload
+			p.navbar-text 
+				a#test(href="#") test
 			p.navbar-text#username #{username}
 			p.navbar-text#follower #{follower}
 			p.navbar-text

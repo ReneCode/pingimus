@@ -3,7 +3,7 @@ var Canvas = function(c) {
 
 	var canvas = c;
 	var ctx = canvas.getContext('2d');
-	var sendCommand = undefined;
+	var addNewCommand = undefined;
 
 
 	var paintMode = 'dot';  
@@ -86,16 +86,16 @@ var Canvas = function(c) {
 
 	  switch (paintMode) {
 	    case 'dot':
-	      sendCommand({cmd:'dot', point:points[0]});
+	      addNewCommand({cmd:'dot', point:points[0]});
 	      break;
 
 	    case 'poly':
 	      points = simplify(points, 1);
 	      if (points.length == 1) {
-	        sendCommand({cmd:'dot', point:points[0]});
+	        addNewCommand({cmd:'dot', point:points[0]});
 	      }
 	      else {
-	        sendCommand({cmd:'poly', points:points});
+	        addNewCommand({cmd:'poly', points:points});
 	      }
 	      break;
 
@@ -104,20 +104,20 @@ var Canvas = function(c) {
 	  paintMode = 'dot';
 	}
 
-	this.init = function(sendCommandCallback) {
+	this.init = function(addNewCommandCallback) {
 		console.log("Canvas init");
-		sendCommand = sendCommandCallback;
+		addNewCommand = addNewCommandCallback;
 
 
 		canvas.addEventListener('mousedown', doMouseDown, false);
 		canvas.addEventListener('mouseup', doMouseUp, false);
 		canvas.addEventListener('mousemove', doMouseMove, false);
 	};
-
+/*
 	this.doReload = function(event) {
-	  sendCommandToServer('reload', "");
+	  addNewCommandToServer('reload', "");
 	  return false;
 	}
-
+*/
 };
 

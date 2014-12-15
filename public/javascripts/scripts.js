@@ -15,7 +15,7 @@ $( function() {
   clientBuffer = new ClientBuffer(sendCommandToServer);
 
   canvas = new Canvas(cv);
-  canvas.init(sendCommand);
+  canvas.init(adddNewCommand);
 
 
 
@@ -32,12 +32,14 @@ $( function() {
   canvas.addEventListener('touchmove', doMouseMove, false);
 
 */
-  $("#reload").click( canvas.doReload );
-  $("#refresh").click( Picture.refresh );
+  $("#reload").click( doReload );
+  $("#test").click( tryToSendToServer );
+//  $("#refresh").click( Picture.refresh );
 
   $('form').submit(sendUserCommand);
 
-//  var reloadInterval = setInterval(doReload, 10*1000);
+  var sendToServerInteraval = setInterval(tryToSendToServer, 1*1000);
+  var reloadInterval = setInterval(doReload, 10*1000);
 });
 
 
@@ -45,10 +47,17 @@ $( function() {
   called every 10 seconds
 */
 var doReload = function() {
-  canvas.doReload();
-
+  sendCommandToServer('reload', null);
 }
 
+
+var tryToSendToServer = function() {
+  clientBuffer.tryToSendToServer( function(err, data) {
+    ;
+  });
+
+
+}
 
 var sendUserCommand = function() {
   // send input
@@ -82,7 +91,13 @@ var receiveDataFromServer = function(data) {
       break;
 
     case 'reload':
-      Picture.reload(data);
+      Picture.clearCmdList();
+      // data from server / my follower
+      Picture.addCmdList(data.para);
+      // my own data
+      var cmdList = clientBuffer.getCmdList();
+      Picture.addCmdList(cmdList);
+      Picture.redraw();
       break;
 
     case 'login':
@@ -106,8 +121,11 @@ var receiveDataFromServer = function(data) {
 
 /**
 */
-var sendCommand = function(data) {
+var adddNewCommand = function(data) {
   clientBuffer.add(data);
+  Picture.addCmdList([data]);
+
+/*
   clientBuffer.tryToSendToServer( function(err, data) {
     if (data) {
       data.forEach(function(c) {
@@ -116,13 +134,11 @@ var sendCommand = function(data) {
 
     }
   });
-
+*/
 
 }
 
 var sendCommandToServer = function(cmd, para) {
-
-
   var data = {
         cmd: cmd,
         para: JSON.stringify(para)
