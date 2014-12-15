@@ -1,5 +1,5 @@
 var Sketch = require('./Sketch.js');
-var User = require('./User.js');
+var User = require('./user.js');
 var ServerTime = require('./ServerTime.js');
 var async = require('async');
 

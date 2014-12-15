@@ -1,5 +1,5 @@
 
-user = require('./user');
+user = require('./user.js');
 db = require('./database');
 
 var UserCollection = function() {

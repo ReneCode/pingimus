@@ -1,6 +1,6 @@
 
 //var Database = require('./db/database');
-var User = require('./User');
+var User = require('./user.js');
 var Sketch = require('./Sketch');
 
 var SessionHandler = function (db) {
