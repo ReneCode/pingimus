@@ -33,31 +33,54 @@ var Sketch = (function() {
 		return resultPoints;
 	};
 
+	/**
+		callback( {
+			cmd: [cmd1, cmd2, cmd3],
+			servertime: <servertime>,
+			maxcreatetime: <time>
+					})
+	*/
 	var _getFromMyFollower = function(database, userId, callback) {
 		database.getUser(userId, function(err, oUser) {
 			if (!oUser) {
 				return callback(new Error('user not found'), null);
 			}
+
 			if (!oUser.follower) {
 				// user follows no other
-				return callback(null, null)
+				oUser.follower = [];
 			}
-			var result = [];
-			var currentTime = ServerTime.getCurrentTime();
+			var result = undefined;
+			var serverTime = ServerTime.getCurrentTime();
+			var maxCreate = 0;
 			async.map(oUser.follower, 
 
 				function(oneFollower,doneCb,c) {
 					database.getSketch(oneFollower, function(err, data) {
 						data.forEach(function(cmd) {
-							if (cmd.expire > currentTime) {
-								result.push(cmd);
+							if (cmd.expire > maxCreate) {
+								if (!result) {
+									result = [cmd];
+								}
+								else {
+									result.push(cmd);
+								}
+								if (cmd.create > maxCreate) {
+									maxCreate = cmd.create;
+								}
+							}
+							else {
+								// remove that cmd
+								// TODO
 							}
 						});
 						doneCb(null);
 					});
 				}, 
 				function(err, r) {
-					callback(null, result);
+					callback(null, {cmdlist:result, 
+									servertime:serverTime, 
+									maxcreatetime:maxCreate} );
 			});
 		});
 	}
@@ -82,8 +105,8 @@ var Sketch = (function() {
 			}
 			else {
 				var obj = { cmd:'dot', 
-							create:ServerTime.getCurrentTime(),
-							expire:ServerTime.getExpireTime(), 
+							create:cmd.create,
+							expire:cmd.expire, 
 							point: {x:cmd.point.x, y:cmd.point.y} };
 				database.addSketch(userId, obj, function(err, data) {
 					if (err) {
@@ -103,8 +126,8 @@ var Sketch = (function() {
 			}
 			else {
 				var obj = {cmd:'poly', 
-							create:ServerTime.getCurrentTime(),
-							expire:ServerTime.getExpireTime(), 
+							create:cmd.create,
+							expire:cmd.expire, 
 							points:points}
 				database.addSketch(userId, obj, function(err, data) {
 					if (err) {

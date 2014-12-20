@@ -19,7 +19,7 @@ var ClientBuffer = function(sendToServerCb) {
 				cmdList.forEach( function(c) {
 					if (!c.hasOwnProperty('expire')) {
 						c.expire = expire;
-						c.create = create;
+//						c.create = create;
 					}
 				});
 				break;

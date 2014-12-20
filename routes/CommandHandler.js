@@ -21,6 +21,8 @@ var CommandHandler = function (db) {
 				async.map(para,
 					// function for each element
 					function(oneCmd, doneCb, c) {
+						oneCmd.create = create;
+						oneCmd.expire = expire;
 						switch (oneCmd.cmd) {
 							case 'dot':
 								Sketch.addDot(database, userId, oneCmd, function(err, data) {
@@ -59,13 +61,15 @@ var CommandHandler = function (db) {
 
 			case 'reload':
 				Sketch.getFromMyFollower(database, userId, function(err, data) {
-					if (!err) {
-						if (data) {
-							console.log("reload:%d", data.length);
+					if (!err  && data) {
+						if (data.cmdlist) {
+//							console.log("reload:%d, servertime:%d", data.cmdlist.length, data.servertime);
 						}
+
 						res.send({cmd:cmd, 
-							servertime:ServerTime.getCurrentTime(),
-							para:data});
+							servertime: (data.servertime - 10*1000),
+							maxcreatetime:data.maxcreatetime,
+							cmdlist:data.cmdlist});
 					}
 				});
 				break;
@@ -79,6 +83,10 @@ var CommandHandler = function (db) {
 				});
 				break;
 
+
+			case 'flushdb':
+				database.clearDb();
+				break;
 
 		}
 

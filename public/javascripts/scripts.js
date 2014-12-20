@@ -10,14 +10,14 @@ $( function() {
   var cv = $('#cvp')[0];
   $('#cvp').css('background-color', 'rgba(158, 167, 184, 0.2)');
   cv.width = 400;
-  cv.height = 200;
+  cv.height = 400;
 
   clientBuffer = new ClientBuffer(sendCommandToServer);
 
   canvas = new Canvas(cv);
   canvas.init(adddNewCommand);
 
-
+  Picture.setBlockRedrawCallback(canvas.blockRedraw);
 
 
 /*
@@ -91,13 +91,17 @@ var receiveDataFromServer = function(data) {
       break;
 
     case 'reload':
+      if (!data.cmdlist) {
+        return;
+      }
+      Picture.setServerTime(data.servertime);
       Picture.clearCmdList();
       // data from server / my follower
-      Picture.addCmdList(data.para);
+      Picture.addCmdList(data.cmdlist);
       // my own data
       var cmdList = clientBuffer.getCmdList();
       Picture.addCmdList(cmdList);
-      Picture.redraw();
+      Picture.refresh();
       break;
 
     case 'login':
@@ -123,7 +127,8 @@ var receiveDataFromServer = function(data) {
 */
 var adddNewCommand = function(data) {
   clientBuffer.add(data);
-  Picture.addCmdList([data]);
+  Picture.addCmd(data);
+  Picture.drawCmd(data);
 
 /*
   clientBuffer.tryToSendToServer( function(err, data) {

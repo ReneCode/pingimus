@@ -53,7 +53,7 @@ var Canvas = function(c) {
 	//  console.log("down / x:%d y:%d", pt.x, pt.y);
 	  points.push(pt);
 	  mouseDown = true;
-	  setTimeout( switchMouseModeElapsed, 200);
+	  setTimeout( switchMouseModeElapsed, 100);
 	}
 
 
@@ -113,6 +113,10 @@ var Canvas = function(c) {
 		canvas.addEventListener('mouseup', doMouseUp, false);
 		canvas.addEventListener('mousemove', doMouseMove, false);
 	};
+
+	this.blockRedraw = function() {
+		return mouseDown;
+	}
 /*
 	this.doReload = function(event) {
 	  addNewCommandToServer('reload', "");

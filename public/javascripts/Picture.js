@@ -3,6 +3,8 @@ var Picture = (function() {
 
 	var cmdList = undefined;
 	var refreshInterval = undefined;
+	var blockRedraw = undefined;
+	var localServerDelta = undefined;
 
 	var coordToClient = function(pt) {
 		var c = $('#cvp')[0];
@@ -73,7 +75,7 @@ var Picture = (function() {
 	};
 
 
-	var drawCmd = function(cmd) {
+	var _drawCmd = function(cmd) {
 		switch (cmd.cmd) {
 			case 'dot':
 				_drawDot(cmd.point);
@@ -85,14 +87,18 @@ var Picture = (function() {
 		}
 	}
 
-	var _redraw = function(now) {
+	var _redraw = function() {
 		if (!cmdList) {
 			return;
 		}
+		if (blockRedraw()) {
+			return;
+		}
+		var calcServerTime = getTimeNow() - localServerDelta;
 		clear();
 		cmdList.forEach(function(cmd) {	
-			if (!cmd.create  ||  cmd.create <= now) {
-				drawCmd(cmd);
+			if (!cmd.create  ||  cmd.create <= calcServerTime) {
+				_drawCmd(cmd);
 			}
 		});
 	}
@@ -111,36 +117,57 @@ var Picture = (function() {
 		}
 	}
 
+	var _addCmd = function(data) {
+		if (!cmdList) {
+			cmdList = [data];
+		}
+		else {
+			cmdList.push(data);
+		}
+	}
+
 
 	var getTimeNow = function() {
 		var now = new Date().valueOf();
-		now = now; //  - 10*1000;
 		return now;	
 	}
 
 	var _refresh = function() {
-		var now = getTimeNow();
-		updateCmdList(now);
-		_redraw(now);
+		updateCmdList();
+		_redraw();
 	}
 
-	var updateCmdList = function(now) {
+	var updateCmdList = function() {
 		if (!cmdList) {
 			return;
 		}
 
+		var localTime = getTimeNow();
+		var calcServerTime = getTimeNow() - localServerDelta;
+
 		// remove expired elements
 		cmdList = cmdList.filter( function(c) {
-			if (c.expire <= now) {
+			if (c.expire <= calcServerTime) {
 				return false;
 			}
 			return true;
 		});
 	}
 
+
+
+
+	var _setServerTime = function(newServerTime) {
+		localServerDelta = getTimeNow() - newServerTime;
+	}
+
+
 	refreshInterval = setInterval(_refresh, 1*1000);
 
 	return {
+		setServerTime: function(newServerTime) {
+			_setServerTime(newServerTime);
+		},
 
 		clearCmdList: function() {
 			_clearCmdList();
@@ -148,6 +175,10 @@ var Picture = (function() {
 
 		addCmdList: function(data) {
 			_addCmdList(data);
+		},
+
+		addCmd: function(data) {
+			_addCmd(data);
 		},
 
 		redraw: function() {
@@ -162,12 +193,20 @@ var Picture = (function() {
 			_drawPolygon(para);
 		},
 
+		drawCmd: function(para) {
+			_drawCmd(para);
+		},
+
 		reload: function(data) {
 			_reload(data);
 		},
 
 		refresh: function() {
 			_refresh();
+		},
+
+		setBlockRedrawCallback: function(callback) {
+			blockRedraw = callback;
 		},
 
 		receiveMessage: function(msg) {
