@@ -14,6 +14,8 @@ var Database = function() {
 	this.connect = function( callback ) {
 
 		if (process.env.REDISTOGO_URL) {
+	console.log("redis:" + process.env.REDISTOGO_URL);
+
 			var rtg   = require("url").parse(process.env.REDISTOGO_URL);
 			client = redis.createClient(rtg.port, rtg.hostname);
 			client.auth(rtg.auth.split(":")[1]);
