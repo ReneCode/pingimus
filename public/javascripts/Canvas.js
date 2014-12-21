@@ -14,77 +14,83 @@ var Canvas = function(c) {
 
 
 	var getMousePosition = function(canvas, evt) {
-	  var rect = canvas.getBoundingClientRect();
-	  return {
-	    x: parseInt( (evt.clientX - rect.left) * 1000 / rect.width),
-	    y: parseInt( (evt.clientY - rect.top) * 1000 / rect.height)
-	  };
+		var rect = canvas.getBoundingClientRect();
+		if (event.type == 'mousedown'  ||
+				event.type == 'mousemove') {
+			return {
+				x: parseInt( (evt.clientX - rect.left) * 1000 / rect.width),
+				y: parseInt( (evt.clientY - rect.top) * 1000 / rect.height)
+			};
+		}
+		else {
+			var pt = evt.targetTouches[0];
+
+			if (!pt) {
+				return null; 
+			}
+			return {
+				x: parseInt( (evt.targetTouches[0].clientX - rect.left) * 1000 / rect.width),
+				y: parseInt( (evt.targetTouches[0].clientY - rect.top) * 1000 / rect.height)
+			};
+		}
 	}
 
-
 	var switchMouseModeElapsed = function() {
-	  if (mouseDown == true) {
-	    paintMode = 'poly';
-	    var canvas = $('#cvp')[0];
-	//    canvas.css({'cursor': 'crosshair'});
-	  }
+		if (mouseDown == true) {
+			paintMode = 'poly';
+		}
 	}
 
 	var saveImage = function() {
-	  var canvas = $('#cvp')[0];
-	  var ctx = canvas.getContext('2d');
-	  imageData = ctx.getImageData(0,0,canvas.width, canvas.width);
+		var canvas = $('#cvp')[0];
+		var ctx = canvas.getContext('2d');
+		imageData = ctx.getImageData(0,0,canvas.width, canvas.width);
 	}
 
 
 
 	var restoreImage = function() {
-	  var canvas = $('#cvp')[0];
-	  var ctx = canvas.getContext('2d');
-	  ctx.putImageData(imageData, 0, 0);
+		var canvas = $('#cvp')[0];
+		var ctx = canvas.getContext('2d');
+		ctx.putImageData(imageData, 0, 0);
 	}
 
 
 	var doMouseDown = function(event) {
-	  saveImage();
-	  event.target.style.cursor = 'pointer';
-	  var canvas = $('#cvp')[0];
-	  var pt = getMousePosition(canvas, event);
-	//  console.log("down / x:%d y:%d", pt.x, pt.y);
-	  points.push(pt);
-	  mouseDown = true;
-	  setTimeout( switchMouseModeElapsed, 100);
+		event.preventDefault();
+		saveImage();
+		event.target.style.cursor = 'pointer';
+		var canvas = $('#cvp')[0];
+		var pt = getMousePosition(canvas, event);
+		points.push(pt);
+		mouseDown = true;
+		setTimeout( switchMouseModeElapsed, 100);
 	}
 
 
 
 	var doMouseMove = function(event) {
-	  if (mouseDown) {
-	    var canvas = $('#cvp')[0];
-	    var pt = getMousePosition(canvas, event);
-
-	//    console.log("mouseMove / x:%d y:%d", pt.x, pt.y);
-
-	    // echo drawing the last segment of the polygon
-	    if (points.length > 0) {
-	      Picture.drawPolygon([points[points.length-1], pt]);
-	    }
-
-	    points.push(pt);
-
-	  }
+		event.preventDefault();
+		if (mouseDown) {
+			var canvas = $('#cvp')[0];
+			console.log("move");
+			var pt = getMousePosition(canvas, event);
+			// echo drawing the last segment of the polygon
+			if (points.length > 0) {
+				Picture.drawPolygon([points[points.length-1], pt]);
+			}
+			points.push(pt);
+		}
 	}
 
 	var doMouseUp = function(event) {
-	  restoreImage();
+		event.preventDefault();
+		restoreImage();
 
-	  event.target.style.cursor = 'default';
-
-	  mouseDown = false;
-	  var canvas = $('#cvp')[0];
-	  var pt = getMousePosition(canvas, event);
-
-	  switch (paintMode) {
+		event.target.style.cursor = 'default';
+		mouseDown = false;
+		//	  var canvas = $('#cvp')[0];
+		switch (paintMode) {
 	    case 'dot':
 	      addNewCommand({cmd:'dot', point:points[0]});
 	      break;
@@ -108,6 +114,10 @@ var Canvas = function(c) {
 		console.log("Canvas init");
 		addNewCommand = addNewCommandCallback;
 
+
+		canvas.addEventListener('touchstart', doMouseDown, false);
+		canvas.addEventListener('touchend', doMouseUp, false);
+		canvas.addEventListener('touchmove', doMouseMove, false);
 
 		canvas.addEventListener('mousedown', doMouseDown, false);
 		canvas.addEventListener('mouseup', doMouseUp, false);

@@ -3,7 +3,16 @@
 var canvas = undefined;
 var clientBuffer = undefined;
 
+var setText = function(text) {
+  var label = document.getElementById("label");
+  label.innerHTML = text;
+ //   console.log(text);
 
+}
+
+var handler = function(ev) {
+//  setText('hallo:' + ev.type + " / " + ev.targetTouches[0].clientX);
+}
 
 $( function() {
   // DOM is ready
@@ -18,6 +27,11 @@ $( function() {
   canvas.init(adddNewCommand);
 
   Picture.setBlockRedrawCallback(canvas.blockRedraw);
+
+
+  cv.addEventListener('touchstart', handler, false);
+  cv.addEventListener('touchend', handler, false);
+  cv.addEventListener('touchmove', handler, false);
 
 
 /*
