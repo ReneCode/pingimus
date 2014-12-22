@@ -59,6 +59,7 @@ var Sketch = (function() {
 					database.getSketch(oneFollower, function(err, data) {
 						data.forEach(function(cmd) {
 							if (cmd.expire > maxCreate) {
+								cmd.color = 'red';
 								if (!result) {
 									result = [cmd];
 								}

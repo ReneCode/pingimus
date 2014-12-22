@@ -42,21 +42,22 @@ var Picture = (function() {
 		ctx.clearRect(0,0,c.width,c.height);		
 	};
 
-	var _drawDot = function(pt, width) {
+	var _drawDot = function(pt, color) {
 		var c = $('#cvp')[0];
 		var ctx = c.getContext('2d');
+		ctx.globalAlpha = 0.6;
 		var p = coordToClient(pt);
-		ctx.FillStyle = "#440044";
-		var w = width | 4;
-		ctx.fillRect(p.x-2, p.y-2, 4, 4);
+		ctx.fillStyle = color || "black";
+		ctx.fillRect(p.x-2, p.y-2, 8, 8);
 	};
 
-	var _drawPolygon = function(para) {
+	var _drawPolygon = function(para, color) {
 		if (!para  ||  para.length < 2) {
 			return;
 		}
 		var c = $('#cvp')[0];
 		var ctx = c.getContext('2d');
+		ctx.globalAlpha = 0.6;
 		ctx.beginPath();
 		var first = true;
 		para.forEach(function(pt) {
@@ -69,8 +70,8 @@ var Picture = (function() {
 				ctx.lineTo(p.x, p.y);
 			} 
 		});
-		ctx.lineWidth=4;
-		ctx.FillStyle = "#440044";
+		ctx.lineWidth= 4;
+		ctx.strokeStyle = color || "black";
 		ctx.stroke();
 	};
 
@@ -78,11 +79,11 @@ var Picture = (function() {
 	var _drawCmd = function(cmd) {
 		switch (cmd.cmd) {
 			case 'dot':
-				_drawDot(cmd.point);
+				_drawDot(cmd.point, cmd.color);
 				break;
 				
 			case 'poly':
-				_drawPolygon(cmd.points);
+				_drawPolygon(cmd.points, cmd.color);
 				break;
 		}
 	}
