@@ -45,7 +45,7 @@ var Picture = (function() {
 	var _drawDot = function(pt, color) {
 		var c = $('#cvp')[0];
 		var ctx = c.getContext('2d');
-		ctx.globalAlpha = 0.6;
+		ctx.globalAlpha = 0.7;
 		var p = coordToClient(pt);
 		ctx.fillStyle = color || "black";
 		ctx.fillRect(p.x-2, p.y-2, 8, 8);
@@ -57,7 +57,7 @@ var Picture = (function() {
 		}
 		var c = $('#cvp')[0];
 		var ctx = c.getContext('2d');
-		ctx.globalAlpha = 0.6;
+		ctx.globalAlpha = 0.7;
 		ctx.beginPath();
 		var first = true;
 		para.forEach(function(pt) {
@@ -88,6 +88,10 @@ var Picture = (function() {
 		}
 	}
 
+	var sortCreate = function(a, b) {
+		return a.create - b.create;
+	}
+
 	var _redraw = function() {
 		if (!cmdList) {
 			return;
@@ -98,7 +102,7 @@ var Picture = (function() {
 		var calcServerTime = getTimeNow() - localServerDelta;
 		clear();
 		cmdList.forEach(function(cmd) {	
-			if (!cmd.create  ||  cmd.create <= calcServerTime) {
+			if (cmd.show  ||  cmd.create <= calcServerTime) {
 				_drawCmd(cmd);
 			}
 		});
@@ -116,6 +120,7 @@ var Picture = (function() {
 		else {
 			cmdList = cmdList.concat(data);
 		}
+		cmdList.sort( sortCreate );
 	}
 
 	var _addCmd = function(data) {
@@ -125,6 +130,7 @@ var Picture = (function() {
 		else {
 			cmdList.push(data);
 		}
+		cmdList.sort( sortCreate );
 	}
 
 

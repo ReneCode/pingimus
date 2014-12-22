@@ -140,6 +140,7 @@ var receiveDataFromServer = function(data) {
 /**
 */
 var adddNewCommand = function(data) {
+  data.show = true;
   clientBuffer.add(data);
   Picture.addCmd(data);
   Picture.drawCmd(data);
