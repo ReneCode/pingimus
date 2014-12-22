@@ -33,7 +33,7 @@ describe('Sketch', function() {
 
 	it ('add', function(done) {
 
-		Sketch.addDot(database, 'abc', {x:55, y:44}, function(err, data) {
+		Sketch.addDot(database, 'abc', {point:{x:55, y:44}}, function(err, data) {
 			expect(err).to.be(null);
 			expect(data.point.x).to.eql(55);
 			expect(data.point.y).to.eql(44);
@@ -44,7 +44,7 @@ describe('Sketch', function() {
 
 
 	it ('getAll', function(done) {
-		Sketch.addDot(database, 'abc', {x:55, y:44}, function(err, d) {
+		Sketch.addDot(database, 'abc', {point:{x:55, y:44}}, function(err, d) {
 			Sketch.getFromMe(database, 'abc', function(err, data) {
 				expect(err).to.be(null);
 				expect(data[0].point.x).to.eql(55);
@@ -57,9 +57,9 @@ describe('Sketch', function() {
 	});
 
 	it ('getAll multiple', function(done) {
-		Sketch.addDot(database, 'abc', {x:22, y:44}, function(err, d) {
-			Sketch.addDot(database, 'abc', {x:11, y:33}, function(err, d) {
-				Sketch.addDot(database, 'abc', {x:77, y:99}, function(err, d) {
+		Sketch.addDot(database, 'abc', {point:{x:22, y:44}}, function(err, d) {
+			Sketch.addDot(database, 'abc', {point:{x:11, y:33}}, function(err, d) {
+				Sketch.addDot(database, 'abc', {point:{x:77, y:99}}, function(err, d) {
 					Sketch.getFromMe(database, 'abc', function(err, data) {
 						expect(err).to.be(null);
 						expect(data.length).to.be(3);
@@ -77,20 +77,24 @@ describe('Sketch', function() {
 
 	it ('Sketch#getFromMyFollower', function(done) {
 		// aa is following: bb,cc
-		Sketch.addDot(database, 'bb', {x:22, y:44}, function(err, d) {
-			Sketch.addDot(database, 'bb', {x:11, y:33}, function(err, d) {
-				Sketch.addDot(database, 'cc', {x:77, y:99}, function(err, d) {
-					Sketch.getFromMyFollower(database, 'aa', function(err, data) {
-						expect(err).to.be(null);
-						expect(data.length).to.be(3);
-						expect(data[0].point.x).to.be(22);
-						expect(data[1].point.y).to.be(33);
-						expect(data[2].cmd).to.be('dot');
-						expect(data[1].expire).to.exist;
-						done();
+		Sketch.addDot(database, 'bb', {point:{x:22, y:44}}, function(err, d) {
+			setTimeout( function() {
+				Sketch.addDot(database, 'bb', {point:{x:11, y:33}}, function(err, d) {
+					Sketch.addDot(database, 'cc', {point:{x:77, y:99}}, function(err, d) {
+						Sketch.getFromMyFollower(database, 'aa', function(err, data) {
+							expect(err).to.be(null);
+							expect(data.cmdlist.length).to.be(3);
+							expect(data.cmdlist[0].point.x).to.be(22);
+							expect(data.cmdlist[1].point.y).to.be(33);
+							expect(data.cmdlist[2].cmd).to.be('dot');
+							expect(data.cmdlist[1].expire).to.exist;
+							// create time ist different, because auf setTimout - waiting
+							expect(data.cmdlist[0].create).not.be(data.cmdlist[2].create);
+							done();
+						});
 					});
 				});
-			});
+			}, 50);
 		});
 	});
 

@@ -106,8 +106,8 @@ var Sketch = (function() {
 			}
 			else {
 				var obj = { cmd:'dot', 
-							create:cmd.create,
-							expire:cmd.expire, 
+							create:ServerTime.getCurrentTime(),
+							expire:ServerTime.getExpireTime(), 
 							point: {x:cmd.point.x, y:cmd.point.y} };
 				database.addSketch(userId, obj, function(err, data) {
 					if (err) {
@@ -127,8 +127,8 @@ var Sketch = (function() {
 			}
 			else {
 				var obj = {cmd:'poly', 
-							create:cmd.create,
-							expire:cmd.expire, 
+							create:ServerTime.getCurrentTime(),
+							expire:ServerTime.getExpireTime(), 
 							points:points}
 				database.addSketch(userId, obj, function(err, data) {
 					if (err) {
