@@ -15,14 +15,9 @@ var CommandHandler = function (db) {
 		switch (cmd) {
 
 			case 'cmdlist':
-				var create = ServerTime.getCurrentTime();
-				var expire = ServerTime.getExpireTime();
-
 				async.map(para,
 					// function for each element
 					function(oneCmd, doneCb, c) {
-						oneCmd.create = create;
-						oneCmd.expire = expire;
 						switch (oneCmd.cmd) {
 							case 'dot':
 								Sketch.addDot(database, userId, oneCmd, function(err, data) {
